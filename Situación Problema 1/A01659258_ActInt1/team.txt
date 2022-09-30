@@ -1,0 +1,27 @@
+Actividad Integradora 1
+
+Alumnos:
+    Alejandro Díaz Villagómez | A01276769
+    Emiliano Saucedo Arriola  | A01659258
+
+Profesor:
+    Sergio Ruiz Loza
+
+Fecha: 
+    08/09/2022
+
+
+
+Partes específicas del proyecto en las que trabajó cada quien:
+
+	PARTE 1: Algoritmo KMP
+	    1) Alejandro Díaz 
+	    2) Emiliano Saucedo 
+
+	PARTE 2: Algoritmo de Manacher
+	    1) Alejandro Díaz 
+	    2) Emiliano Saucedo 
+
+	PARTE 3: LCS
+	    1) Alejandro Díaz 
+	    2) Emiliano Saucedo 
