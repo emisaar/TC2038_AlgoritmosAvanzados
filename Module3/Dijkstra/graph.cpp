@@ -40,15 +40,15 @@ void Graph::print(){
     cout << "Nodes:" << endl;
     for (int i = 0; i < nodes.size(); i++){
         if(nodes[i]->prev != nullptr) {
-            cout << "N: " << nodes[i]->number << " P: " << nodes[i]->prev->number << " D: " << nodes[i]->distance << endl;
+            cout << "Node: " << nodes[i]->number << " Prev: " << nodes[i]->prev->number << " Dist: " << nodes[i]->distance << endl;
         } else {
-            cout << "N: " << nodes[i]->number << " P: nullptr" << " D: " << nodes[i]->distance << endl;
+            cout << "Node: " << nodes[i]->number << " Prev: nullptr" << " Dist: " << nodes[i]->distance << endl;
         }
     }
 
     cout << "\nEdges:" << endl;
     for (int i = 0; i < edges.size(); i++){
-        cout << "N1: " << edges[i]->first->number << " N2: " << edges[i]->second->number << " D: " << edges[i]->weight << endl;
+        cout << "Node: " << edges[i]->first->number << " Node: " << edges[i]->second->number << " Dist: " << edges[i]->weight << endl;
     }
 }
 
@@ -86,6 +86,32 @@ void Graph::runDijkstra(Node *source) {
             if (alt < v->distance) {
                 v->distance = alt;
                 v->prev = u;
+            }
+        }
+    }
+}
+
+void Graph::runFloyd() {
+    vector<vector<int> > matrix;
+    for (int i = 0; i < nodes.size(); i++) {
+        vector<int> row(nodes.size(), 10000);
+        row[i] = 0;
+        matrix.push_back(row);
+    }
+    vector<Edge*>::iterator ei;
+    for (ei = edges.begin(); ei != edges.end(); ++ei) {
+        int row = (*ei)->first->number - 1;
+        int column = (*ei)->second->number - 1;
+        int value = (*ei)->weight;
+        matrix[row][column] = value;
+    }
+
+    for (int k = 1; nodes.size(); k++) {
+        for (int i = 1; nodes.size(); i++) {
+            for(int j = 1; nodes.size(); j++) {
+                if (matrix[i][j] > matrix[i][k] + matrix[k][j]) {
+                    matrix[i][j] = matrix[i][k] + matrix[k][j];
+                }
             }
         }
     }

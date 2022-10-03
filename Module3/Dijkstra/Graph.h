@@ -21,6 +21,7 @@ class Graph {
         vector <Node*> getNeighbors(Node *n);
         void print();
         void runDijkstra(Node *source);
+        void runFloyd();
         Node *getMinDist(vector<Node*> qs);
         void remove(vector<Node*> &qs, Node *q);
         int getLength(Node *u, Node *v);
