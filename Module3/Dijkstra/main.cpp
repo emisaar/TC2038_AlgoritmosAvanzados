@@ -42,6 +42,36 @@ int main() {
     g->runDijkstra(n1);
     cout << "----------------" << endl;
     g->print();
-    
+
+    vector<Node*> nodesFloyd;
+    vector<Edge*> edgesFloyd;
+
+    Node *n1F = new Node(1);
+    Node *n2F = new Node(2);
+    Node *n3F = new Node(3);
+    Node *n4F = new Node(4);
+    nodesFloyd.push_back(n1F);
+    nodesFloyd.push_back(n2F);
+    nodesFloyd.push_back(n3F);
+    nodesFloyd.push_back(n4F);
+
+    edgesFloyd.push_back(new Edge(n1F, n2F, 2));
+    edgesFloyd.push_back(new Edge(n1F, n3F, 2));
+    edgesFloyd.push_back(new Edge(n1F, n4F, 3));
+    edgesFloyd.push_back(new Edge(n2F, n1F, 2));
+    edgesFloyd.push_back(new Edge(n2F, n3F, 1));
+    edgesFloyd.push_back(new Edge(n2F, n4F, 5));
+    edgesFloyd.push_back(new Edge(n3F, n1F, 2));
+    edgesFloyd.push_back(new Edge(n3F, n2F, 1));
+    edgesFloyd.push_back(new Edge(n3F, n4F, 4));
+    edgesFloyd.push_back(new Edge(n4F, n1F, 3));
+    edgesFloyd.push_back(new Edge(n4F, n2F, 5));
+    edgesFloyd.push_back(new Edge(n4F, n3F, 4));
+
+    Graph *gF = new Graph(nodesFloyd, edgesFloyd);
+
+    cout << "Floyd" << endl;
+    gF->runFloyd();
+
     return 0;
 }

@@ -48,7 +48,7 @@ void Graph::print(){
 
     cout << "\nEdges:" << endl;
     for (int i = 0; i < edges.size(); i++){
-        cout << "Node: " << edges[i]->first->number << " Node: " << edges[i]->second->number << " Dist: " << edges[i]->weight << endl;
+        cout << "Node: " << edges[i]->first->number << " to node: " << edges[i]->second->number << " Dist: " << edges[i]->weight << endl;
     }
 }
 
@@ -98,6 +98,7 @@ void Graph::runFloyd() {
         row[i] = 0;
         matrix.push_back(row);
     }
+
     vector<Edge*>::iterator ei;
     for (ei = edges.begin(); ei != edges.end(); ++ei) {
         int row = (*ei)->first->number - 1;
@@ -106,14 +107,26 @@ void Graph::runFloyd() {
         matrix[row][column] = value;
     }
 
-    for (int k = 1; nodes.size(); k++) {
-        for (int i = 1; nodes.size(); i++) {
-            for(int j = 1; nodes.size(); j++) {
+    for (int k = 1; k < nodes.size(); k++) {
+        for (int i = 1; i < nodes.size(); i++) {
+            for(int j = 1; j < nodes.size(); j++) {
                 if (matrix[i][j] > matrix[i][k] + matrix[k][j]) {
                     matrix[i][j] = matrix[i][k] + matrix[k][j];
                 }
             }
         }
+    }
+    
+    for (int i = 0; i < nodes.size(); i++) {
+        for (int j = 0; j < nodes.size(); j++) {
+            if (matrix[i][j] == 10000) {
+                cout << "I" << "|";
+            }
+            else {
+                cout << matrix[i][j] << "|";
+            }
+        }
+        cout << endl;
     }
 }
 
