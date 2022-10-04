@@ -10,6 +10,6 @@ using namespace std;
 
 Node::Node(int _number){
     number = _number;
-    // distance = 1000;
-    // prev = NULL;
+    distance = 10000;
+    prev = nullptr;
 }

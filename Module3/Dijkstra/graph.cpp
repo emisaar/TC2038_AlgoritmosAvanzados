@@ -20,12 +20,14 @@ Itera sobre el vector edges para conocer los vecinos.
 */
 vector<Node*> Graph::getNeighbors(Node *n){
     vector<Node*> neighbors;
-    for (int i = 0; i < edges.size(); i++){
-        if (edges[i]->first == n){
-            neighbors.push_back(edges[i]->second);
+    vector<Edge*>::iterator ei;
+    for(ei = edges.begin(); ei != edges.end(); ++ei) {
+        if((*ei)->first == n) {
+            neighbors.push_back((*ei)->second);
         }
-        else if (edges[i]->second == n){
-            neighbors.push_back(edges[i]->first);
+
+        if((*ei)->second == n) {
+            neighbors.push_back((*ei)->first);
         }
     }
     return neighbors;
@@ -38,17 +40,20 @@ imprimir los atributos de los nodos y aristas.
 */
 void Graph::print(){
     cout << "Nodes:" << endl;
-    for (int i = 0; i < nodes.size(); i++){
-        if(nodes[i]->prev != nullptr) {
-            cout << "Node: " << nodes[i]->number << " Prev: " << nodes[i]->prev->number << " Dist: " << nodes[i]->distance << endl;
+    vector<Node*>::iterator ni;
+    for (ni = nodes.begin(); ni != nodes.end(); ++ni) {
+        if((*ni)->prev != nullptr) {
+            cout << "Node: " << (*ni)->number << " Prev: " << (*ni)->prev->number << " Dist: " << (*ni)->distance << endl;
         } else {
-            cout << "Node: " << nodes[i]->number << " Prev: nullptr" << " Dist: " << nodes[i]->distance << endl;
+            cout << "Node: " << (*ni)->number << " Prev: nullptr " << "Dist: " << (*ni)->distance << endl;
         }
     }
+    
 
     cout << "\nEdges:" << endl;
-    for (int i = 0; i < edges.size(); i++){
-        cout << "Node: " << edges[i]->first->number << " to node: " << edges[i]->second->number << " Dist: " << edges[i]->weight << endl;
+    vector<Edge*>::iterator ei;
+    for(ei = edges.begin(); ei != edges.end(); ++ei) {
+        cout << "Node: " << (*ei)->first->number << " to node: " << (*ei)->second->number << " Dist: " << (*ei)->weight << endl;
     }
 }
 
@@ -61,12 +66,19 @@ Lleva a cabo lógica del algoritmo.
 void Graph::runDijkstra(Node *source) {
     // Crear vector de nodos Q
     vector<Node*> Q;
+    vector<Node*>::iterator ni;
     // Inicializar valores de los nodos dist = INF y prev = UNDF
-    for (int v = 0; v < nodes.size(); v++){
-        nodes[v]->distance = 1000;
-        nodes[v]->prev = nullptr;
-        Q.push_back(nodes[v]);
+    for (ni = nodes.begin(); ni != nodes.end(); ++ni) {
+        (*ni)->distance = 1000;
+        (*ni)->prev = nullptr;
+        Q.push_back(*ni);
     }
+    // for (int v = 0; v < nodes.size(); v++){
+    //     nodes[v]->distance = 1000;
+    //     nodes[v]->prev = nullptr;
+    //     Q.push_back(nodes[v]);
+    // }
+
 
     // Actualizar distancia a 0 para nodo inicial 
     source->distance = 0;
@@ -79,15 +91,24 @@ void Graph::runDijkstra(Node *source) {
         remove(Q, u);
         // Crear vector con los nodos vecinos a u (nodo actual) 
         vector<Node*> neighbors = getNeighbors(u);
+        vector<Node*>::iterator ni;
         // Actualizar distancias
-        for(int n = 0; n < neighbors.size(); n++) {
-            Node *v = neighbors[n];
+        for(ni = neighbors.begin(); ni != neighbors.end(); ++ni) {
+            Node *v = *ni;
             int alt = u->distance + getLength(u, v);
             if (alt < v->distance) {
                 v->distance = alt;
                 v->prev = u;
             }
         }
+        // for(int n = 0; n < neighbors.size(); n++) {
+        //     Node *v = neighbors[n];
+        //     int alt = u->distance + getLength(u, v);
+        //     if (alt < v->distance) {
+        //         v->distance = alt;
+        //         v->prev = u;
+        //     }
+        // }
     }
 }
 
@@ -107,9 +128,9 @@ void Graph::runFloyd() {
         matrix[row][column] = value;
     }
 
-    for (int k = 1; k < nodes.size(); k++) {
-        for (int i = 1; i < nodes.size(); i++) {
-            for(int j = 1; j < nodes.size(); j++) {
+    for (int k = 0; k < nodes.size(); k++) {
+        for (int i = 0; i < nodes.size(); i++) {
+            for(int j = 0; j < nodes.size(); j++) {
                 if (matrix[i][j] > matrix[i][k] + matrix[k][j]) {
                     matrix[i][j] = matrix[i][k] + matrix[k][j];
                 }
