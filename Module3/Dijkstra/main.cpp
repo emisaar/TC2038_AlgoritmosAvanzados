@@ -1,7 +1,34 @@
-//  Actividad 3.2 - Implementación de "Dijkstra" y Floyd
+//  Actividad 3.2 - Implementación de "Dijkstra" y "Floyd"
 //  Emiliano Saucedo Arriola  |  A01659258
 //  Fecha: 06/10/2022
 //  main.cpp
+
+/* Instrucciones:
+Escribe un programa en C++ que implemente los algoritmos de Dijkstra y Floyd para encontrar 
+la distancia más corta entre parejas de nodos en un grafo dirigido. 
+
+El programa debe leer un numero n seguido de n x n valores enteros no negativos que representan 
+una matriz de adyacencias de un grafo dirigido.
+El primer número representa el número de nodos, los siguientes valores en la matriz, el valor 
+en la posición (i, j) representan el peso de la arista del nodo i al nodo j. Si no hay una arista 
+entre el nodo i y el nodo j, el valor en la matriz debe ser -1.
+
+La salida del programa es, primero con el algoritmo de Dijkstra la distancia del nodo i al nodo j 
+para todos los nodos, y luego, la matriz resultado del algoritmo de Floyd.
+*/
+
+/* Teoría
+Dijkstra: Algoritmo utilizado para encontrar los caminos más cortos desde un nodo de origen hasta 
+los demás vértices en un determinado grafo.
+
+Floyd: Algoritmo utilizado para encontrar las distancias más cortas entre cada par de vértices 
+en un grafo dirigido ponderado por arista.
+
+Referencias:
+https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-using-priority_queue-stl/
+https://www.geeksforgeeks.org/floyd-warshall-algorithm-dp-16/
+https://www.youtube.com/watch?v=oNI0rf2P9gE
+*/
 
 #include <iostream>
 #include "Graph.h"
