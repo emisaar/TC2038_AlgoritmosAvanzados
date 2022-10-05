@@ -25,116 +25,129 @@ vector<vector<int> > createMatrix(int n) {
     return matrix;
 }
 
-int main() {
-    int n;
-    cout << "Introduce el número de nodos: ";
-    cin >> n;
-
-    int w;
-    cout << "Introduce los pesos del grafo." << endl;
-    vector<vector<int> > weightMatrix = createMatrix(n);
-
-    cout << "Matriz de entrada" << endl;
-    for(int i = 0; i < n; i++) {
-        for(int j = 0; j < n; j++) {
-            cout << weightMatrix[i][j] << "|";
-        }
-        cout << endl;
-    }
-
+vector<Node*> createNodes(int n) {
     vector<Node*> nodes;
-    vector<Node*>::iterator niD;
-    vector<Edge*> edges;
-    vector<Edge*>::iterator eiD;
-
     for(int i = 0; i < n; i++) {
         Node *N = new Node(i + 1);
         nodes.push_back(N);
     }
+    return nodes;
+}
 
-    for(int i = 0; i < weightMatrix.size(); i++) {
+vector<Edge*> createEdges(vector<vector<int> > weightMatrix, vector<Node*> nodes) {
+    vector<Edge*> edges;
+   for(int i = 0; i < weightMatrix.size(); i++) {
         for(int j = 0; j < weightMatrix[0].size(); j++) {
             if(weightMatrix[i][j] != -1 && weightMatrix[i][j] != 0) {
                 edges.push_back(new Edge(nodes[i], nodes[j], weightMatrix[i][j]));
             }
         }
     }
+    return edges;
+}
 
-    cout << "Dijkstra" << endl;
-    Graph *g = new Graph(nodes, edges);
-    for(int i = 0; i < nodes.size(); i++) {
-        g->runDijkstra(nodes[i]);
-        for(int j = 0; j < nodes.size(); j++) {
-            cout << "Node " << nodes[i]->number << " to node: " << nodes[j]->number << " Dist: " << nodes[j]->distance << endl;
-        }
-        cout << endl;
+int main() {
+    int n;
+    string exec;
+    cout << "¿Ejecutar caso de prueba (0) o ingresar valores de forma manual? (1): ";
+    cin >> exec;
+
+    while(exec != "0" && exec != "1") {
+        cout << "Opción inválida. Intente de nuevo." << endl;
+        cout << "¿Ejecutar caso de prueba (0) o ingresar valores de forma manual? (1): ";
+        cin >> exec;
     }
-    // g->runDijkstra(nodes[0]);
-    // g->print();
 
-    cout << "Floyd" << endl;
-    Graph *gFloyd = new Graph(nodes, edges);
-    gFloyd->runFloyd();
+    if(exec == "0") {
+        vector<vector<int> > weightMatrix;
+        vector<int> row;
+        row.push_back(0);
+        row.push_back(2);
+        row.push_back(-1);
+        row.push_back(3);
+        weightMatrix.push_back(row);
+        row.clear();
 
-    // Node *n1 = new Node(1);
-    // Node *n2 = new Node(2);
-    // Node *n3 = new Node(3);
-    // Node *n4 = new Node(4);
-    // Node *n5 = new Node(5);
-    // Node *n6 = new Node(6);
-    // nodes.push_back(n1);
-    // nodes.push_back(n2);
-    // nodes.push_back(n3);
-    // nodes.push_back(n4);
-    // nodes.push_back(n5);
-    // nodes.push_back(n6);
+        row.push_back(-1);
+        row.push_back(0);
+        row.push_back(1);
+        row.push_back(5);
+        weightMatrix.push_back(row);
+        row.clear();
 
-    // edges.push_back(new Edge(n1, n2, 6));
-    // edges.push_back(new Edge(n1, n3, 2));
-    // edges.push_back(new Edge(n1, n6, 12));
-    // edges.push_back(new Edge(n2, n3, 7));
-    // edges.push_back(new Edge(n2, n4, 13));
-    // edges.push_back(new Edge(n3, n6, 1));
-    // edges.push_back(new Edge(n3, n4, 10));
-    // edges.push_back(new Edge(n4, n5, 5));
-    // edges.push_back(new Edge(n5, n6, 8));
+        row.push_back(2);
+        row.push_back(3);
+        row.push_back(0);
+        row.push_back(-1);
+        weightMatrix.push_back(row);
+        row.clear();
+        
+        row.push_back(3);
+        row.push_back(-1);
+        row.push_back(4);
+        row.push_back(0);
+        weightMatrix.push_back(row);
+        row.clear();
 
-    // Graph *g = new Graph(nodes, edges);
 
-    // g->print();
-    // g->runDijkstra(n1);
-    // cout << "----------------" << endl;
-    // g->print();
+        cout << "\nMatriz de entrada" << endl;
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 4; j++) {
+                cout << weightMatrix[i][j] << "|";
+            }
+            cout << endl;
+        }
 
-    // vector<Node*> nodesFloyd;
-    // vector<Edge*> edgesFloyd;
+        cout << "\nDijkstra" << endl;
+        for(int i = 0; i < 4; i++) {
+            vector<Node*> nodesDijkstra = createNodes(4);
+            vector<Edge*> edgesDijkstra = createEdges(weightMatrix, nodesDijkstra);
+            
+            Graph *gDijkstra = new Graph(nodesDijkstra, edgesDijkstra);
+            gDijkstra->runDijkstra(nodesDijkstra[i]);
+            gDijkstra->printDijkstra();
+            cout << endl;
+        }
 
-    // Node *n1F = new Node(1);
-    // Node *n2F = new Node(2);
-    // Node *n3F = new Node(3);
-    // Node *n4F = new Node(4);
-    // nodesFloyd.push_back(n1F);
-    // nodesFloyd.push_back(n2F);
-    // nodesFloyd.push_back(n3F);
-    // nodesFloyd.push_back(n4F);
+        cout << "\nFloyd" << endl;
+        vector<Node*> nodesFloyd = createNodes(4);
+        vector<Edge*> edgesFloyd = createEdges(weightMatrix, nodesFloyd);
+        Graph *gFloyd = new Graph(nodesFloyd, edgesFloyd);
+        gFloyd->runFloyd();
 
-    // edgesFloyd.push_back(new Edge(n1F, n2F, 2));
-    // edgesFloyd.push_back(new Edge(n1F, n3F, 2));
-    // edgesFloyd.push_back(new Edge(n1F, n4F, 3));
-    // edgesFloyd.push_back(new Edge(n2F, n1F, 2));
-    // edgesFloyd.push_back(new Edge(n2F, n3F, 1));
-    // edgesFloyd.push_back(new Edge(n2F, n4F, 5));
-    // edgesFloyd.push_back(new Edge(n3F, n1F, 2));
-    // edgesFloyd.push_back(new Edge(n3F, n2F, 1));
-    // edgesFloyd.push_back(new Edge(n3F, n4F, 4));
-    // edgesFloyd.push_back(new Edge(n4F, n1F, 3));
-    // edgesFloyd.push_back(new Edge(n4F, n2F, 5));
-    // edgesFloyd.push_back(new Edge(n4F, n3F, 4));
+    } else {
+        cout << "Introduce el número de nodos: ";
+        cin >> n;
 
-    // Graph *gF = new Graph(nodesFloyd, edgesFloyd);
+        cout << "Introduce los pesos del grafo." << endl;
+        vector<vector<int> > weightMatrix = createMatrix(n);
 
-    // cout << "Floyd" << endl;
-    // gF->runFloyd();
+        cout << "Matriz de entrada" << endl;
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < n; j++) {
+                cout << weightMatrix[i][j] << "|";
+            }
+            cout << endl;
+        }
+
+        cout << "Dijkstra" << endl;
+        for(int i = 0; i < n; i++) {
+            vector<Node*> nodesDijkstra = createNodes(n);
+            vector<Edge*> edgesDijkstra = createEdges(weightMatrix, nodesDijkstra);
+            
+            Graph *gDijkstra = new Graph(nodesDijkstra, edgesDijkstra);
+            gDijkstra->runDijkstra(nodesDijkstra[i]);
+            gDijkstra->printDijkstra();
+            cout << endl;
+        }
+
+        cout << "Floyd" << endl;
+        vector<Node*> nodesFloyd = createNodes(n);
+        vector<Edge*> edgesFloyd = createEdges(weightMatrix, nodesFloyd);
+        Graph *gFloyd = new Graph(nodesFloyd, edgesFloyd);
+        gFloyd->runFloyd();
+    }
+
 
     return 0;
 }

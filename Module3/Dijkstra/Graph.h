@@ -15,12 +15,13 @@ class Graph {
     public:
         vector<Node*> nodes;
         vector<Edge*> edges;
+        Node *_source;
 
         Graph(vector<Node*> _nodes, vector<Edge*> _edges);
 
         vector <Node*> getNeighbors(Node *n);
-        void print();
-        // void printFloyd();
+        void printDijkstra();
+        void printFloyd(vector<vector<int> > matrix);
         void runDijkstra(Node *source);
         void runFloyd();
         Node *getMinDist(vector<Node*> qs);
