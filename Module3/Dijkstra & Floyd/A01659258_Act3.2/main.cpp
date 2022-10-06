@@ -44,6 +44,11 @@ vector<vector<int> > createMatrix(int n) {
             int a = 0;
             cout << "Peso[" << r + 1 << "][" << c + 1 << "]: ";
             cin >> a;
+            while(a < -1) {
+                cout << "Opción inválida. Solo valores enteros no negativos. (-1 es válido)" << endl;
+                cout << "Peso[" << r + 1 << "][" << c + 1 << "]: ";
+                cin >> a;
+            }
             cout << endl;
             row.push_back(a);
         }
@@ -63,7 +68,7 @@ vector<Node*> createNodes(int n) {
 
 vector<Edge*> createEdges(vector<vector<int> > weightMatrix, vector<Node*> nodes) {
     vector<Edge*> edges;
-   for(int i = 0; i < weightMatrix.size(); i++) {
+    for(int i = 0; i < weightMatrix.size(); i++) {
         for(int j = 0; j < weightMatrix[0].size(); j++) {
             if(weightMatrix[i][j] != -1 && weightMatrix[i][j] != 0) {
                 edges.push_back(new Edge(nodes[i], nodes[j], weightMatrix[i][j]));
