@@ -4,6 +4,7 @@
 //  graph.cpp
 
 #include "Graph.h"
+#include <queue>
 
 /*
 Constructor de Graph (Grafo)
@@ -236,4 +237,75 @@ int Graph::getLength(Node *u, Node *v) {
     }
 
     return 0;
+}
+
+int Graph::runFordFulkerson(Node *s, Node *t) {
+    int residualCapacity = 0;
+
+    vector<Node*> q;
+    vector<Node*>::iterator ni;
+    for(ni = nodes.begin(); ni != nodes.end(); ++ni) {
+        (*ni)->distance = -1;
+        (*ni)->prev = nullptr;
+        q.push_back(*ni);
+    }
+
+    while(!q.empty()){
+        Node *u = q[0];
+        remove(q, u);
+        vector<Node*> neigh = getNeighbors(u);
+        vector<Node*>::iterator v;
+        for(v = neigh.begin(); v != neigh.end(); ++v) {
+            (*v)->prev = u;
+            if((*v) == t) {
+                vector<Edge*> path;
+                Node *curr = t;
+                while(curr != s) {
+                    Edge *e = findEdge(curr->prev, curr);
+                    if(e != nullptr) {
+                        path.push_back(e);
+                        curr = curr->prev;
+                    }
+                }
+                // Algoritmo
+                vector<Edge*>::iterator ei;
+                for(ei = path.begin(); ei != path.end(); ++ei) {
+                    (*ei)->flow = 0;
+                }
+
+                while(!path.empty()) {
+                    for(ei = path.begin(); ei != path.end(); ++ei) {
+                        residualCapacity += min(residualCapacity, (*ei)->weight - (*ei)->flow);
+
+                        (*ei)->flow = (*ei)->flow + residualCapacity;
+                        (*ei)->flow = -(*ei)->flow;
+                    }
+                }
+            }
+        }
+    }
+    return residualCapacity;
+}
+
+Edge *Graph::findEdge(Node *u, Node *v) {
+    Edge *e = nullptr;
+    vector<Edge*>::iterator ei;
+    for (ei = edges.begin(); ei != edges.end(); ++ei) {
+        if((*ei)->first == u && (*ei)->second == v) {
+            return (*ei);
+        }
+    }
+    return e;
+}
+
+int Graph::getMinCapacity(vector<Edge*> e) {
+    Edge *min = e[0];
+    vector<Edge*>::iterator ei;
+    
+    for (ei = e.begin(); ei != e.end(); ++ei) {
+        if ((*ei)->weight < min->weight) {
+            min = *ei;
+        }
+    }
+    return min->weight;
 }

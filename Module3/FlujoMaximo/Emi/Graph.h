@@ -22,8 +22,16 @@ class Graph {
         vector <Node*> getNeighbors(Node *n);
         void printDijkstra();
         void printFloyd(vector<vector<int> > matrix);
+
         void runDijkstra(Node *source);
         void runFloyd();
+        int runFordFulkerson(Node *source, Node *sink);
+        Edge *findEdge(Node *u, Node *v);
+
+        int getMinCapacity(vector<Edge*> e);
+
+        
+
         Node *getMinDist(vector<Node*> qs);
         void remove(vector<Node*> &qs, Node *q);
         int getLength(Node *u, Node *v);

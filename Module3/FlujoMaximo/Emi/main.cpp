@@ -93,59 +93,80 @@ int main() {
     if(exec == "0") {
         vector<vector<int> > weightMatrix;
         vector<int> row;
+
+        // 0
         row.push_back(0);
-        row.push_back(2);
+        row.push_back(16);
+        row.push_back(13);
         row.push_back(-1);
-        row.push_back(3);
+        row.push_back(-1);
+        row.push_back(-1);
         weightMatrix.push_back(row);
         row.clear();
 
+        // 1
         row.push_back(-1);
         row.push_back(0);
-        row.push_back(1);
-        row.push_back(5);
+        row.push_back(10);
+        row.push_back(12);
+        row.push_back(-1);
+        row.push_back(-1);
         weightMatrix.push_back(row);
         row.clear();
 
-        row.push_back(2);
-        row.push_back(3);
+        // 2
+        row.push_back(-1);
+        row.push_back(4);
         row.push_back(0);
+        row.push_back(-1);
+        row.push_back(14);
         row.push_back(-1);
         weightMatrix.push_back(row);
         row.clear();
         
-        row.push_back(3);
+        // 3
         row.push_back(-1);
+        row.push_back(-1);
+        row.push_back(-1);
+        row.push_back(0);
+        row.push_back(-1);
+        row.push_back(20);
+        weightMatrix.push_back(row);
+        row.clear();
+
+        // 4
+        row.push_back(-1);
+        row.push_back(-1);
+        row.push_back(-1);
+        row.push_back(7);
+        row.push_back(0);
         row.push_back(4);
+        weightMatrix.push_back(row);
+        row.clear();
+
+        // 5
+        row.push_back(-1);
+        row.push_back(-1);
+        row.push_back(-1);
+        row.push_back(-1);
+        row.push_back(-1);
         row.push_back(0);
         weightMatrix.push_back(row);
         row.clear();
 
 
         cout << "\nMatriz de entrada" << endl;
-        for(int i = 0; i < 4; i++) {
-            for(int j = 0; j < 4; j++) {
+        for(int i = 0; i < 6; i++) {
+            for(int j = 0; j < 6; j++) {
                 cout << weightMatrix[i][j] << "|";
             }
             cout << endl;
         }
 
-        cout << "\nDijkstra" << endl;
-        for(int i = 0; i < 4; i++) {
-            vector<Node*> nodesDijkstra = createNodes(4);
-            vector<Edge*> edgesDijkstra = createEdges(weightMatrix, nodesDijkstra);
-            
-            Graph *gDijkstra = new Graph(nodesDijkstra, edgesDijkstra);
-            gDijkstra->runDijkstra(nodesDijkstra[i]);
-            gDijkstra->printDijkstra();
-            cout << endl;
-        }
-
-        cout << "\nFloyd" << endl;
-        vector<Node*> nodesFloyd = createNodes(4);
-        vector<Edge*> edgesFloyd = createEdges(weightMatrix, nodesFloyd);
-        Graph *gFloyd = new Graph(nodesFloyd, edgesFloyd);
-        gFloyd->runFloyd();
+        vector<Node*> nodes = createNodes(6);
+        vector<Edge*> edges = createEdges(weightMatrix, nodes);
+        Graph *gFloyd = new Graph(nodes, edges);
+        gFloyd->runFordFulkerson(nodes[0], nodes[5]);
 
     } else {
         cout << "Introduce el número de nodos: ";

@@ -11,6 +11,7 @@ class Edge {
         Node *first;
         Node *second;
         int weight;
+        int flow;
 
         Edge(Node *_first, Node *_second, int _weight);
 };
