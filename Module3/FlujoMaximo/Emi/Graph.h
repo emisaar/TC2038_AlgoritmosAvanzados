@@ -25,11 +25,10 @@ class Graph {
 
         void runDijkstra(Node *source);
         void runFloyd();
+        
         int runFordFulkerson(Node *source, Node *sink);
         Edge *findEdge(Node *u, Node *v);
-
-        int getMinCapacity(vector<Edge*> e);
-
+        int getMaxDist(vector<Edge*> qs);
         
 
         Node *getMinDist(vector<Node*> qs);

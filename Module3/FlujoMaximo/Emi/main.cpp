@@ -98,46 +98,46 @@ int main() {
         row.push_back(0);
         row.push_back(16);
         row.push_back(13);
-        row.push_back(-1);
-        row.push_back(-1);
-        row.push_back(-1);
+        row.push_back(0);
+        row.push_back(0);
+        row.push_back(0);
         weightMatrix.push_back(row);
         row.clear();
 
         // 1
-        row.push_back(-1);
+        row.push_back(0);
         row.push_back(0);
         row.push_back(10);
         row.push_back(12);
-        row.push_back(-1);
-        row.push_back(-1);
+        row.push_back(0);
+        row.push_back(0);
         weightMatrix.push_back(row);
         row.clear();
 
         // 2
-        row.push_back(-1);
+        row.push_back(0);
         row.push_back(4);
         row.push_back(0);
-        row.push_back(-1);
+        row.push_back(0);
         row.push_back(14);
-        row.push_back(-1);
+        row.push_back(0);
         weightMatrix.push_back(row);
         row.clear();
         
         // 3
-        row.push_back(-1);
-        row.push_back(-1);
-        row.push_back(-1);
         row.push_back(0);
-        row.push_back(-1);
+        row.push_back(0);
+        row.push_back(0);
+        row.push_back(0);
+        row.push_back(0);
         row.push_back(20);
         weightMatrix.push_back(row);
         row.clear();
 
         // 4
-        row.push_back(-1);
-        row.push_back(-1);
-        row.push_back(-1);
+        row.push_back(0);
+        row.push_back(0);
+        row.push_back(0);
         row.push_back(7);
         row.push_back(0);
         row.push_back(4);
@@ -145,11 +145,11 @@ int main() {
         row.clear();
 
         // 5
-        row.push_back(-1);
-        row.push_back(-1);
-        row.push_back(-1);
-        row.push_back(-1);
-        row.push_back(-1);
+        row.push_back(0);
+        row.push_back(0);
+        row.push_back(0);
+        row.push_back(0);
+        row.push_back(0);
         row.push_back(0);
         weightMatrix.push_back(row);
         row.clear();

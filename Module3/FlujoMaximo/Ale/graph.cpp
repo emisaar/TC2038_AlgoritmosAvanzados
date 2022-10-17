@@ -1,239 +1,306 @@
-//  Actividad 3.2 - Implementación de "Dijkstra" y "Floyd"
-//  Emiliano Saucedo Arriola  |  A01659258
-//  Fecha: 06/10/2022
-//  graph.cpp
+//  Actividad 3.3
+//  Flujo Máximo
+//
+//  Alejandro Díaz Villagómez | A01276769
+//
+//  Fecha: 17/10/2022
+//
+//  Referencias:
+//  https://favtutor.com/blogs/ford-fulkerson-algorithm
+//  https://github.com/fit-coder/fitcoderyoutube/blob/master/graph/ford_fulkerson.cpp
+//  https://www.programiz.com/dsa/ford-fulkerson-algorithm
+//  https://github.com/BedirT/Algorithms_and_DS/blob/master/Algorithms/Graph/Ford%20Fulkerson.cpp
+//  https://www.youtube.com/watch?v=_UcOALraATY
 
 #include "Graph.h"
+#include <algorithm>
 
-/*
-Constructor de Graph (Grafo)
-Recibe como parámetro:
-    - Vector de nodos (_nodes)
-    - Vector de artistas (_edges)
-*/
-Graph::Graph(vector<Node*> _nodes, vector<Edge*> _edges){
+#define INFINITO INT_MAX
+
+//CONSTRUCTOR
+//Complejidad --> O(n^2)
+Graph::Graph(vector<vector<int>> matGraph){
+    int numNodos = (int)matGraph.size();
+    vector<Node*> _nodes;
+    vector<Edge*> _edges;
+    
+    //Creamos los nodos
+    for (int i = 1; i <= numNodos; i++){
+        Node* n = new Node(i);
+        _nodes.push_back(n);
+    }
+    
+    //Creamos las aristas
+    for (int i = 0; i < numNodos; i++){
+        for (int j = 0; j < numNodos; j++){
+            //Significa que es el mismo nodo, o bien, no hay arista entre ambos nodos
+            if (matGraph[i][j] == 0 or matGraph[i][j] == -1)
+                continue;
+            
+            //Caso contrario, agregamos la arista al vector de Edges*
+            _edges.push_back(new Edge(_nodes[i], _nodes[j], matGraph[i][j], 0));
+        }
+    }
     nodes = _nodes;
     edges = _edges;
 }
 
-/*
-Método getNeighbors -> Complejidad: O(n)
-Recibe:
-    - Un nodo (n) al que se le desea encontrar sus vecinos.
-Regresa un vector (neighbors) con los nodos vecinos al nodo 
-que recibe como parámetro.
-Itera sobre el vector edges para conocer los vecinos.
-*/
-vector<Node*> Graph::getNeighbors(Node *n){
-    vector<Node*> neighbors;
-    vector<Edge*>::iterator ei;
-    for(ei = edges.begin(); ei != edges.end(); ++ei) {
-        if((*ei)->first == n) {
-            neighbors.push_back((*ei)->second);
-        } 
-        // else if ((*ei)->second == n) {
-        //     neighbors.push_back((*ei)->first);
-        // }
-    }
-    return neighbors;
-}
-
-/*
-Método printDijkstra -> Complejidad: O(n)
-Itera sobre los vectores nodes y edges para acceder e 
-imprimir los atributos de los nodos y aristas.
-*/
-void Graph::printDijkstra(){
-    vector<Node*>::iterator ni;
-        for (ni = nodes.begin(); ni != nodes.end(); ++ni) {
-            if((*ni)->prev != nullptr || (*ni)->distance != 0) {
-                cout << "Node: " << s->number << " to node " << (*ni)->number << " Dist: " << (*ni)->distance << endl;
-            }
+//FUNCIÓN NEIGHBORS: Obtenemos un vector de nodos vecinos de n
+//Complejidad --> O(n*e)
+vector<Node*> Graph::getNeighbors(vector<Node*> Q, Node* n){
+    vector<Node*> nodos;
+    for (Node* q : Q){
+        for (Edge* e : edges){
+            if (e->first == n and e->second == q)
+                nodos.push_back(e->second);
+            /* Funcionalidad para grafo NO dirigido
+            else if (e->second == n and e->first == q)
+                nodos.push_back(e->first);
+             */
         }
+    }
+    return nodos;
 }
 
-/*
-Método printFloyd() -> Complejidad O(n^2)
-Recibe:
-    - Una matriz (matrix)
-Recorre la matriz para imprimir los elementos de la misma en consola.
-*/
-
-void Graph::printFloyd(vector<vector<int> > matrix){
-    for (int i = 0; i < nodes.size(); i++) {
-        for (int j = 0; j < nodes.size(); j++) {
-                cout << matrix[i][j] << "|";
-        }
-        cout << endl;
+//FUNCIÓN PRINT: Imprimimos el grafo según el recorrido de Dijkstra
+//Complejidad --> O(n)
+void Graph::printDijkstra(Node* source){
+    for (Node* n : nodes){
+        if (n->number == source->number) continue;
+        cout << "\tnode " << source->number << " to node " << n->number << " : " << n->distance << endl;
     }
+    //cout << endl;
 }
 
-/*
-Método runDijkstra -> Complejidad: O((|V| + |E|)log(|V|))
-    Donde:
-        |V| -> número de nodos
-        |E| -> número de aristas
-Recibe:
-    - Nodo de origen (source).
-Lleva a cabo lógica del algoritmo.
-*/
-void Graph::runDijkstra(Node *source) {
-    // Al ejecutar Dijkstra, guardamos el Nodo inicial para ejecutar el print.
-    s = source;
-    // Vector de nodos Q
-    vector<Node*> Q;
-    // Iterador de nodos
-    vector<Node*>::iterator ni;
-    // Guardamos los nodos del grafo en el vector Q
-    for (ni = nodes.begin(); ni != nodes.end(); ++ni) {
-        // (*ni)->distance = 1000;
-        // (*ni)->prev = nullptr;
-        Q.push_back(*ni);
+//FUNCIÓN DIJKSTRA: Hacemos el recorrido Dijkstra en un nodo
+//Complejidad --> O(n^2)
+void Graph::runDijkstra(Node* source){
+    vector<Node*> Q = nodes;
+    
+    //Inicializamos los valores de cada nodo para realizar el recorrido
+    //Complejidad --> O(n)
+    for (Node* q : Q){
+        q->distance = 1000;
+        q->prev = nullptr;
     }
-
-
-    // Actualizar distancia a 0 para nodo inicial 
+    
+    //La distancia del nodo en donde inicia el recorrido es 0
     source->distance = 0;
-
-    // Mientras Q no esté vacía...
+    
+    //Complejidad --> O(n)
     while (!Q.empty()) {
-        // Buscar nodo con la distancia más corta (u)
-        Node *u = getMinDist(Q);
-        // Eliminar nodo con menor distancia (u) del vector Q
+        Node* u = getMinDist(Q);
         remove(Q, u);
-        // Crear vector con los nodos vecinos al Nodo u
-        vector<Node*> neighbors = getNeighbors(u);
-
-        // Itera sobre los vecinos del Nodo u
-        for(ni = neighbors.begin(); ni != neighbors.end(); ++ni) {
-            // Para cada Nodo v del vector neighbors
-            Node *v = *ni;
-            // Alt corresponde a la suma de la distancia del Nodo u y la distancia entre el Nodo u y Nodo v
+        
+        vector<Node*> neighbors = getNeighbors(Q, u);
+        //Complejidad --> O(n)
+        for (Node* v : neighbors){
             int alt = u->distance + getLength(u, v);
-            // Si hay algún camino más pequeño a v a través de u
-            if (alt < v->distance) {
-                // Actualiza distancia de v
+            if (alt < v->distance){
                 v->distance = alt;
-                // Actualizar apuntador prev del Nodo v al Nodo u
                 v->prev = u;
             }
         }
     }
 }
 
-/*
-Método runFloyd -> Complejidad: O(|V|^3)
-    Donde:
-        |V| -< número de nodos
-Lleva a cabo lógica del algoritmo.
-*/
-void Graph::runFloyd() {
-    // Crear matriz
-    vector<vector<int> > matrix;
-    for (int i = 0; i < nodes.size(); i++) {
-        // Crear vector fila (row) de tamaño del vector de nodos (nodes.size()), donde cada elemento tiene un valor de 10000
-        vector<int> row(nodes.size(), 10000);
-        // Diagonal de la matriz en 0s
-        row[i] = 0;
-        // Añadir a matriz
-        matrix.push_back(row);
+//FUNCIÓN DIJKSTRA: Hace el recorrido de Dijkstra para todos los nodos
+//Complejidad --> O(n^3)
+void Graph::Dijkstra(){
+    cout << "\n############ RUNNING DIJKSTRA ############" << endl;
+    //Complejidad --> O(n)
+    for (Node* n : nodes){
+        //Complejidad --> O(n^2)
+        runDijkstra(n);
+        //Complejidad --> O(n)
+        printDijkstra(n);
     }
+}
 
-    // Iteración sobre aristas
-    vector<Edge*>::iterator ei;
-    for (ei = edges.begin(); ei != edges.end(); ++ei) {
-        // Obtener indexes row y column para la matriz
-        int row = (*ei)->first->number - 1;
-        int column = (*ei)->second->number - 1;
-        // Obtener peso de la arista
-        int value = (*ei)->weight;
-        // Asignar peso en la posición de la matriz
-        matrix[row][column] = value;
+//FUNCIÓN MIN-DISTANCE: Devolvemos el nodo con menor distancia
+//Complejidad --> O(n)
+Node* Graph::getMinDist (vector<Node*> qs){
+    Node* u = new Node(100);
+    for (Node* q : qs){
+        if (q->distance < u->distance)
+            u = q;
     }
+    return u;
+}
 
-    // k es el vértice intermedio en el camino más corto desde el origen hasta el destino
-    // i, j iteradores para recorrer matriz
-    for (int k = 0; k < nodes.size(); k++) {
-        for (int i = 0; i < nodes.size(); i++) {
-            for(int j = 0; j < nodes.size(); j++) {
-                // Actualizar la distancia menor 
-                if (matrix[i][j] > matrix[i][k] + matrix[k][j]) {
-                    matrix[i][j] = matrix[i][k] + matrix[k][j];
-                }
+//FUNCIÓN REMOVE: Eliminamos el nodo (del vector) con menor distancia
+//Complejidad --> O(n)
+void Graph::remove(vector<Node*> &qs, Node* q){
+    int index = 0;
+    for (Node* n : qs){
+        if (n == q) break;
+        index++;
+    }
+    qs.erase(qs.begin() + index);
+}
+
+//GETTER COST: Obtenemos el costo de la arista de 2 nodos
+//Complejidad --> O(e)
+int Graph::getLength(Node* u, Node* v){
+    for (Edge* e : edges){
+        if (e->first == u and e->second == v)
+            return e->weight;
+        /* Funcionalidad para grafo NO dirigido
+        if (e->first == v and e->second == u)
+            return e->weight;
+         */
+    }
+    return -1000;
+}
+
+
+//FUNCIÓN FLOYD-WARSHALL: Calcula el camino más corto con el algoritmo Floyd-Warshall
+//Complejidad --> O(n^3)
+void Graph::FloydWarshall(){
+    cout << "\n######## RUNNING FLOYD-WARSHALL ########" << endl;
+    
+    //Preparamos la matriz
+    vector<vector<int>> dist;
+    int v = (int)nodes.size();
+    
+    //Complejidad --> O(n)
+    for (int i = 0; i < v; i++){
+        vector<int> row(v, INFINITO);
+        row[i] = 0; //La diagonal queda en 0
+        dist.push_back(row);
+    }
+    
+    //Inicializamos los valores correspondientes a los edges existentes
+    //Complejidad --> O(e)
+    for (Edge* e : edges){
+        dist[e->first->number - 1][e->second->number - 1] = e->weight;
+    }
+    
+    //Crearemos v matrices para calcular el resultado
+    //Además necesitamos 2 ciclos adicionales para iterar la matriz
+    //Complejidad --> O(n^3)
+    for (int k = 0; k < v; k++){
+        for (int i = 0; i < v; i++){
+            for (int j = 0; j < v; j++){
+                if (dist[i][k] != INFINITO && dist[k][j] != INFINITO &&
+                    dist[i][k] + dist[k][j] < dist[i][j] )
+                 dist[i][j] = dist[i][k] + dist[k][j];
             }
         }
     }
-
-    printFloyd(matrix);
+    
+    //Impresión del resultado
+    //Complejidad --> O(n^2)
+    for (int i = 0; i < v; i++){
+        for (int j = 0; j < v; j++){
+            if (dist[i][j] == INFINITO)
+                cout << "\t∞ ";
+            else cout << "\t" << dist[i][j];
+        }
+        cout << endl;
+    }
+    cout << endl;
 }
 
-/*
-Método getMinDist -> Complejidad: O(n)
-Recibe:
-    - Un vector de nodos (qs)
-Regresa el nodo con la menor distancia.
-Compara las distancias de los nodos del vector, guardando 
-el nodo con la distancia más corta.
-*/
-Node * Graph::getMinDist(vector<Node*> qs) {
-    Node *min = qs[0];
-    vector<Node*>::iterator ni;
-    
-    // Recorrer el vector de nodos (qs)
-    for (ni = qs.begin(); ni != qs.end(); ++ni) {
-        // Si la distancia del nodo actual es menor a la distancia más corta encontrada anteriormente, actualiza min al Nodo actual.
-        if ((*ni)->distance < min->distance) {
-            min = *ni;
+Node* Graph::getSource(int source){
+    for (Node* n : nodes){
+        if (n->number == source)
+            return n;
+    }
+    //No se encontró el nodo fuente
+    return nullptr;
+}
+
+Node* Graph::getSink(int sink){
+    for (Node* n : nodes){
+        if (n->number == sink)
+            return n;
+    }
+    //No se encontró el nodo destino
+    return nullptr;
+}
+
+Node* Graph::getVertex(Node* nd){
+    for (Node* n : nodes){
+        if (n == nd)
+            return n;
+    }
+    //No se encontró el nodo
+    return nullptr;
+}
+
+bool Graph::containsNode(Node* nd){
+    for (Node* n : nodes){
+        if (n == nd)
+            return true;
+    }
+    //No se encontró el nodo
+    return false;
+}
+
+
+bool Graph::containsEdge(vector<Edge*> path){
+    for (Edge* e : edges){
+        for (Edge* ep : path){
+            if (e == ep and e->flow == ep->flow)
+                return true;
         }
     }
-    return min;
+    return false;
 }
 
+int Graph::findMinFlow(vector<Edge*> path){
+    int minFlow = path[0]->flow;
+    for (Edge* e : path){
+        minFlow = min(minFlow, e->flow);
+    }
+    return minFlow;
+}
 
-/*
-remove(vector<Node*> &qs, Node *q) -> Complejidad: O(n)
-Recibe:
-    - Un vector de nodos (qs)
-    - Un nodo (q) que es el que se desea eliminar.
-El método itera el vector de nodos para buscar el nodo a
-eliminar. En caso de encontrarlo, se realiza un erase en la
-posición que se encuentra.
-*/
-void Graph::remove(vector<Node*> &qs, Node *q) {
-    vector<Node*>::iterator ni;
+vector<Edge*> Graph::getPath(Node* source, Node* sink, vector<Edge*> &path){
+    if (source == sink) return path;
     
-    // Recorrer el vector de nodos (qs)
-    for (ni = qs.begin(); ni != qs.end(); ++ni) {
-        // Si encuentra el nodo q en el vector qs, elimina nodo del vector
-        if (*ni == q) {
-            qs.erase(ni);
-            break;
+    for (Edge* e : edges){
+        int residualCapacity = e->weight - e->flow;
+        if (residualCapacity > 0 && !containsEdge(path)){
+            e->flow = residualCapacity;
+            path.push_back(e);
+            vector<Edge*> result = getPath(e->second, sink, path);
+            
+            if (!result.empty()){
+                return result;
+            }
         }
     }
+    
+    return path;
 }
 
-/* 
-getLenth(Node *u, Node *v) -> Complejidad: O(n)
-Recibe dos nodos:
-    - Nodo u: Nodo de origen
-    - Node v; Node de destino
-Regresa un int que corresponde al peso (weight) de la arista.
-Se itera el vector de aristas (edges) para encontrar su
-respectivo peso (weight).
-*/
-int Graph::getLength(Node *u, Node *v) {
-    vector<Edge*>::iterator ei;
-
-    // Recorrer el vector de aristas (edges)
-    for (ei = edges.begin(); ei != edges.end(); ++ei) {
-        // Si el nodo first es igual al nodo u y el nodo second es igual al nodo v, regresa el peso de esa arista
-        if ((*ei)->first == u && (*ei)->second == v) {
-            return (*ei)->weight;
-        } 
-        // else if ((*ei)->first == v && (*ei)->second == u) {
-        //     return (*ei)->weight;
-        // }
+int Graph::FordFulkerson(int s, int t){
+    Node* source = getSource(s);
+    Node* sink = getSink(t);
+    
+    //No se encontró el nodo fuente o el nodo destino
+    if (!source || !sink) return -1;
+    
+    vector<Edge*> path, path2;
+    int maxFlow = 0;
+    
+    path2 = getPath(source, sink, path);
+    while (!path2.empty()){
+        int minFlow = findMinFlow(path2);
+        maxFlow += minFlow;
+        for (Edge* e : path2){
+            e->flow += minFlow;
+            e->returnEdge -= minFlow;
+        }
+        path2 = getPath(source, sink, path);
     }
-
-    return 0;
+    /*
+    for (Edge* e : edges){
+        maxFlow += e->flow;
+    }
+     */
+    return maxFlow;
 }
+

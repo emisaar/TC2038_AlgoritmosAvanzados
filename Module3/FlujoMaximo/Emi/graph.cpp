@@ -240,8 +240,6 @@ int Graph::getLength(Node *u, Node *v) {
 }
 
 int Graph::runFordFulkerson(Node *s, Node *t) {
-    int residualCapacity = 0;
-
     vector<Node*> q;
     vector<Node*>::iterator ni;
     for(ni = nodes.begin(); ni != nodes.end(); ++ni) {
@@ -251,12 +249,14 @@ int Graph::runFordFulkerson(Node *s, Node *t) {
     }
 
     while(!q.empty()){
-        Node *u = q[0];
-        remove(q, u);
+        Node *u = q.front();
+        q.erase(q.begin());
+        u->distance = 0;
         vector<Node*> neigh = getNeighbors(u);
         vector<Node*>::iterator v;
         for(v = neigh.begin(); v != neigh.end(); ++v) {
             (*v)->prev = u;
+
             if((*v) == t) {
                 vector<Edge*> path;
                 Node *curr = t;
@@ -265,26 +265,34 @@ int Graph::runFordFulkerson(Node *s, Node *t) {
                     if(e != nullptr) {
                         path.push_back(e);
                         curr = curr->prev;
+                        // curr->distance = 1;
                     }
                 }
                 // Algoritmo
+                int min = 0;
+
                 vector<Edge*>::iterator ei;
+
                 for(ei = path.begin(); ei != path.end(); ++ei) {
-                    (*ei)->flow = 0;
-                }
-
-                while(!path.empty()) {
-                    for(ei = path.begin(); ei != path.end(); ++ei) {
-                        residualCapacity += min(residualCapacity, (*ei)->weight - (*ei)->flow);
-
-                        (*ei)->flow = (*ei)->flow + residualCapacity;
-                        (*ei)->flow = -(*ei)->flow;
+                    if ((*ei)->weight < min) {
+                        min = (*ei)->weight;
                     }
                 }
+
+                for(ei = path.begin(); ei != path.end(); ++ei) {
+                    (*ei)->weight += min;
+                }
+
+                return min;
+            }
+            
+            if((*v)->distance == -1) {
+                (*v)->distance = u->distance + 1;
+                q.push_back(*v);
             }
         }
     }
-    return residualCapacity;
+    return 0;
 }
 
 Edge *Graph::findEdge(Node *u, Node *v) {
@@ -296,16 +304,4 @@ Edge *Graph::findEdge(Node *u, Node *v) {
         }
     }
     return e;
-}
-
-int Graph::getMinCapacity(vector<Edge*> e) {
-    Edge *min = e[0];
-    vector<Edge*>::iterator ei;
-    
-    for (ei = e.begin(); ei != e.end(); ++ei) {
-        if ((*ei)->weight < min->weight) {
-            min = *ei;
-        }
-    }
-    return min->weight;
 }
