@@ -240,59 +240,32 @@ int Graph::getLength(Node *u, Node *v) {
 }
 
 int Graph::runFordFulkerson(Node *s, Node *t) {
-    vector<Node*> q;
-    vector<Node*>::iterator ni;
-    for(ni = nodes.begin(); ni != nodes.end(); ++ni) {
-        (*ni)->distance = -1;
-        (*ni)->prev = nullptr;
-        q.push_back(*ni);
-    }
+    int maxFlow = 0;
 
-    while(!q.empty()){
-        Node *u = q.front();
-        q.erase(q.begin());
-        u->distance = 0;
-        vector<Node*> neigh = getNeighbors(u);
-        vector<Node*>::iterator v;
-        for(v = neigh.begin(); v != neigh.end(); ++v) {
-            (*v)->prev = u;
-
-            if((*v) == t) {
-                vector<Edge*> path;
-                Node *curr = t;
-                while(curr != s) {
-                    Edge *e = findEdge(curr->prev, curr);
-                    if(e != nullptr) {
-                        path.push_back(e);
-                        curr = curr->prev;
-                        // curr->distance = 1;
-                    }
-                }
-                // Algoritmo
-                int min = 0;
-
-                vector<Edge*>::iterator ei;
-
-                for(ei = path.begin(); ei != path.end(); ++ei) {
-                    if ((*ei)->weight < min) {
-                        min = (*ei)->weight;
-                    }
-                }
-
-                for(ei = path.begin(); ei != path.end(); ++ei) {
-                    (*ei)->weight += min;
-                }
-
-                return min;
+    vector<Edge*>::iterator ei;
+    for (ei = edges.begin(); ei != edges.end(); ++ei) {
+        (*ei)->flow = (*ei)->weight;
+        while(bfs(s, t)) {
+            int pathFlow = INT_MAX;
+            Node *curr = t;
+            while (curr != s) {
+                Edge *e = findEdge(curr->prev, curr);
+                pathFlow = min(pathFlow, e->flow);
+                curr = curr->prev;
             }
-            
-            if((*v)->distance == -1) {
-                (*v)->distance = u->distance + 1;
-                q.push_back(*v);
+            curr = t;
+            while(curr != s) {
+                Edge *e1 = findEdge(curr->prev, curr);
+                e1->flow -= pathFlow;
+
+                Edge *e2 = findEdge(curr, curr->prev);
+                if (e2 != nullptr) e2->flow += pathFlow;
+                curr = curr->prev;
             }
+            maxFlow += pathFlow;
         }
     }
-    return 0;
+    return maxFlow;
 }
 
 Edge *Graph::findEdge(Node *u, Node *v) {
@@ -304,4 +277,35 @@ Edge *Graph::findEdge(Node *u, Node *v) {
         }
     }
     return e;
+}
+
+bool Graph::bfs(Node *s, Node *t) {
+    vector<Node*>::iterator ni;
+    for(ni = nodes.begin(); ni != nodes.end(); ++ni) {
+        (*ni)->visited = false;
+    }
+
+    vector<Node*> q;
+    q.push_back(s);
+    s->prev = nullptr;
+    s->visited = true;
+
+    while(q.size() > 0) {
+        Node *u = q[0];
+        remove(q, u);
+
+        vector<Node*>::iterator v;
+        vector<Node*> neigh = getNeighbors(u);
+        for(v = neigh.begin(); v != neigh.end(); ++v) {
+            Edge *e = findEdge(u, *v);
+            if(e != nullptr){
+                if(!(*v)->visited && e->flow > 0) {
+                    q.push_back(*v);
+                    (*v)->prev = u;
+                    (*v)->visited = true;
+                }
+            }
+        }  
+    }
+     return t->visited == true;
 }

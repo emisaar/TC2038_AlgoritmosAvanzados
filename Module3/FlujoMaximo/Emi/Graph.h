@@ -29,6 +29,7 @@ class Graph {
         int runFordFulkerson(Node *source, Node *sink);
         Edge *findEdge(Node *u, Node *v);
         int getMaxDist(vector<Edge*> qs);
+        bool bfs(Node *s, Node *t);
         
 
         Node *getMinDist(vector<Node*> qs);

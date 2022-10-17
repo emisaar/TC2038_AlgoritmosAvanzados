@@ -8,6 +8,7 @@ class Node {
         int number;
         Node *prev;
         int distance;
+        bool visited;
 
         Node(int _number);
 };

@@ -166,7 +166,7 @@ int main() {
         vector<Node*> nodes = createNodes(6);
         vector<Edge*> edges = createEdges(weightMatrix, nodes);
         Graph *gFloyd = new Graph(nodes, edges);
-        gFloyd->runFordFulkerson(nodes[0], nodes[5]);
+        cout << "FORD FULKERSON "<< gFloyd->runFordFulkerson(nodes[0], nodes[5]) << endl;
 
     } else {
         cout << "Introduce el número de nodos: ";
