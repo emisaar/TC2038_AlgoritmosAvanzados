@@ -239,6 +239,10 @@ int Graph::getLength(Node *u, Node *v) {
     return 0;
 }
 
+/*
+runFordFulkerson -> Complejidad: O(n^2 + log(2m))
+*/
+
 int Graph::runFordFulkerson(Node *s, Node *t) {
     int maxFlow = 0;
 
@@ -268,6 +272,9 @@ int Graph::runFordFulkerson(Node *s, Node *t) {
     return maxFlow;
 }
 
+/*
+findEdge -> Complejidad: O(n)
+*/
 Edge *Graph::findEdge(Node *u, Node *v) {
     Edge *e = nullptr;
     vector<Edge*>::iterator ei;
@@ -279,6 +286,10 @@ Edge *Graph::findEdge(Node *u, Node *v) {
     return e;
 }
 
+
+/*
+bfs -> Complejidad: O(n^2)
+*/
 bool Graph::bfs(Node *s, Node *t) {
     vector<Node*>::iterator ni;
     for(ni = nodes.begin(); ni != nodes.end(); ++ni) {
