@@ -1,7 +1,20 @@
-//  Actividad 3.2 - Implementación de "Dijkstra" y "Floyd"
-//  Emiliano Saucedo Arriola  |  A01659258
-//  Fecha: 06/10/2022
-//  graph.cpp
+//  Actividad 3.3
+//  Flujo Máximo
+
+//  Alejandro Díaz Villagómez | A01276769
+//  Emiliano Saucedo Arriola  | A01659258
+
+//  Fecha: 17/10/2022
+
+/* Referencias:
+https://brilliant.org/wiki/ford-fulkerson-algorithm/
+https://emory.gitbook.io/dsa-java/network-flow/ford-fulkerson-algorithm
+https://favtutor.com/blogs/ford-fulkerson-algorithm
+https://github.com/fit-coder/fitcoderyoutube/blob/master/graph/ford_fulkerson.cpp
+https://www.programiz.com/dsa/ford-fulkerson-algorithm
+https://github.com/BedirT/Algorithms_and_DS/blob/master/Algorithms/Graph/Ford%20Fulkerson.cpp
+https://www.youtube.com/watch?v=_UcOALraATY
+*/
 
 #include "Graph.h"
 #include <queue>
@@ -240,32 +253,42 @@ int Graph::getLength(Node *u, Node *v) {
 }
 
 /*
-runFordFulkerson -> Complejidad: O(n^2 + log(2m))
+runFordFulkerson -> Complejidad: O(n^3 * m)
 */
 
 int Graph::runFordFulkerson(Node *s, Node *t) {
     int maxFlow = 0;
-
-    vector<Edge*>::iterator ei;
-    for (ei = edges.begin(); ei != edges.end(); ++ei) {
-        (*ei)->flow = (*ei)->weight;
+    // Iterar sobre el vector de aristas
+    for (Edge* e : edges) {
+        // Actualizar el flujo (flow) de cada arco con el valor de capacidad (weight) del mismo
+        e->flow = e->weight;
+        // Mientras haya un camino desde el nodo s al nodo t
         while(bfs(s, t)) {
             int pathFlow = INT_MAX;
+            // Nodo temporal para recorrer el path
             Node *curr = t;
             while (curr != s) {
+                // Obtener la arista que conecta el nodo previo con el nodo actual
                 Edge *e = findEdge(curr->prev, curr);
+                // Encontrar el flujo mínimo
                 pathFlow = min(pathFlow, e->flow);
+                // Actualizar el nodo actual
                 curr = curr->prev;
             }
+            // Se realiza el camino inverso para actualizar los flujos
             curr = t;
+            // Mientras el nodo actual no sea el nodo s
             while(curr != s) {
+                // Buscar arista que conecta el nodo previo con el nodo actual para actualizar el flujo
                 Edge *e1 = findEdge(curr->prev, curr);
                 e1->flow -= pathFlow;
 
+                // Buscar arista que conecta el nodo actual con el nodo previo para actualizar el flujo
                 Edge *e2 = findEdge(curr, curr->prev);
                 if (e2 != nullptr) e2->flow += pathFlow;
                 curr = curr->prev;
             }
+            // Actualizar el flujo máximo
             maxFlow += pathFlow;
         }
     }
@@ -276,11 +299,11 @@ int Graph::runFordFulkerson(Node *s, Node *t) {
 findEdge -> Complejidad: O(n)
 */
 Edge *Graph::findEdge(Node *u, Node *v) {
+    // Recorrer el vector de aristas (edges) para encontrar el arco entre nodos u y v
     Edge *e = nullptr;
-    vector<Edge*>::iterator ei;
-    for (ei = edges.begin(); ei != edges.end(); ++ei) {
-        if((*ei)->first == u && (*ei)->second == v) {
-            return (*ei);
+    for (Edge* e : edges) {
+        if (e->first == u && e->second == v) {
+            return e;
         }
     }
     return e;
@@ -291,32 +314,42 @@ Edge *Graph::findEdge(Node *u, Node *v) {
 bfs -> Complejidad: O(n^2)
 */
 bool Graph::bfs(Node *s, Node *t) {
-    vector<Node*>::iterator ni;
-    for(ni = nodes.begin(); ni != nodes.end(); ++ni) {
-        (*ni)->visited = false;
+   // Inicializar nodos como no visitados
+    for (Node* n : nodes) {
+        n->visited = false;
     }
 
+    // Crear vector de nodos
     vector<Node*> q;
+    // Agregar nodo source (s) al vector
     q.push_back(s);
+    // Marcar nodo source (s) como visitado
     s->prev = nullptr;
     s->visited = true;
 
+    // Mientras el vector de nodos no esté vacío
     while(q.size() > 0) {
+        // Obtener primer elemento del vector
         Node *u = q[0];
+        // Eliminar primer elemento del vector
         remove(q, u);
-
-        vector<Node*>::iterator v;
-        vector<Node*> neigh = getNeighbors(u);
-        for(v = neigh.begin(); v != neigh.end(); ++v) {
-            Edge *e = findEdge(u, *v);
-            if(e != nullptr){
-                if(!(*v)->visited && e->flow > 0) {
-                    q.push_back(*v);
-                    (*v)->prev = u;
-                    (*v)->visited = true;
-                }
-            }
-        }  
+        // Iterar sobre el vector de los vecinos de u
+       for (Node* v : getNeighbors(u)) {
+        // Buscar el arco entre nodo u y vecino v
+           Edge *e = findEdge(u, v);
+           // Si el arco existe y no ha sido visitado
+           if(e != nullptr){
+               if(!v->visited && e->flow > 0) {
+                    // Meter vecino v al vector de nodos
+                   q.push_back(v);
+                   // Actualizar previo
+                   v->prev = u;
+                   // Actualizar nodo visitado
+                   v->visited = true;
+               }
+           }
+       }
     }
-     return t->visited == true;
+    // Regresar si el nodo sink (t) ha sido visitado
+    return t->visited == true;
 }

@@ -1,33 +1,19 @@
-//  Actividad 3.2 - Implementación de "Dijkstra" y "Floyd"
-//  Emiliano Saucedo Arriola  |  A01659258
-//  Fecha: 06/10/2022
-//  main.cpp
+//  Actividad 3.3
+//  Flujo Máximo
 
-/* Instrucciones:
-Escribe un programa en C++ que implemente los algoritmos de Dijkstra y Floyd para encontrar 
-la distancia más corta entre parejas de nodos en un grafo dirigido. 
+//  Alejandro Díaz Villagómez | A01276769
+//  Emiliano Saucedo Arriola  | A01659258
 
-El programa debe leer un numero n seguido de n x n valores enteros no negativos que representan 
-una matriz de adyacencias de un grafo dirigido.
-El primer número representa el número de nodos, los siguientes valores en la matriz, el valor 
-en la posición (i, j) representan el peso de la arista del nodo i al nodo j. Si no hay una arista 
-entre el nodo i y el nodo j, el valor en la matriz debe ser -1.
+//  Fecha: 17/10/2022
 
-La salida del programa es, primero con el algoritmo de Dijkstra la distancia del nodo i al nodo j 
-para todos los nodos, y luego, la matriz resultado del algoritmo de Floyd.
-*/
-
-/* Teoría
-Dijkstra: Algoritmo utilizado para encontrar los caminos más cortos desde un nodo de origen hasta 
-los demás vértices en un determinado grafo.
-
-Floyd: Algoritmo utilizado para encontrar las distancias más cortas entre cada par de vértices 
-en un grafo dirigido ponderado por arista.
-
-Referencias:
-https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-using-priority_queue-stl/
-https://www.geeksforgeeks.org/floyd-warshall-algorithm-dp-16/
-https://www.youtube.com/watch?v=oNI0rf2P9gE
+/* Referencias:
+https://brilliant.org/wiki/ford-fulkerson-algorithm/
+https://emory.gitbook.io/dsa-java/network-flow/ford-fulkerson-algorithm
+https://favtutor.com/blogs/ford-fulkerson-algorithm
+https://github.com/fit-coder/fitcoderyoutube/blob/master/graph/ford_fulkerson.cpp
+https://www.programiz.com/dsa/ford-fulkerson-algorithm
+https://github.com/BedirT/Algorithms_and_DS/blob/master/Algorithms/Graph/Ford%20Fulkerson.cpp
+https://www.youtube.com/watch?v=_UcOALraATY
 */
 
 #include <iostream>
@@ -182,23 +168,11 @@ int main() {
             }
             cout << endl;
         }
-
-        cout << "Dijkstra" << endl;
-        for(int i = 0; i < n; i++) {
-            vector<Node*> nodesDijkstra = createNodes(n);
-            vector<Edge*> edgesDijkstra = createEdges(weightMatrix, nodesDijkstra);
-            
-            Graph *gDijkstra = new Graph(nodesDijkstra, edgesDijkstra);
-            gDijkstra->runDijkstra(nodesDijkstra[i]);
-            gDijkstra->printDijkstra();
-            cout << endl;
-        }
-
-        cout << "Floyd" << endl;
-        vector<Node*> nodesFloyd = createNodes(n);
-        vector<Edge*> edgesFloyd = createEdges(weightMatrix, nodesFloyd);
-        Graph *gFloyd = new Graph(nodesFloyd, edgesFloyd);
-        gFloyd->runFloyd();
+        
+        vector<Node*> nodes = createNodes(n);
+        vector<Edge*> edges = createEdges(weightMatrix, nodes);
+        Graph *gFloyd = new Graph(nodes, edges);
+        cout << "FORD FULKERSON "<< gFloyd->runFordFulkerson(nodes[0], nodes[5]) << endl;
     }
 
 
