@@ -295,6 +295,38 @@ int Graph::runFordFulkerson(Node *s, Node *t) {
     return maxFlow;
 }
 
+void Graph::findPaths(Node *s, Node *t, vector<int> &weights, vector<int> &values) {
+    int pathFlow = INT_MAX;
+    vector<Edge*>::iterator ei;
+    for(ei = edges.begin(); ei != edges.end(); ++ei) {
+        (*ei)->flow = (*ei)->weight;
+    }
+    while(bfs(s, t)) {
+        int pathTotalWeight = 0;
+        int pathTotalValue = 0;
+        Node *curr = t;
+        while (curr != s) {
+           if(curr != t) pathTotalValue += curr->number;
+            Edge *e1 = findEdge(curr->prev, curr);
+            pathTotalWeight += e1->weight;
+            pathFlow = min(pathFlow, e1->flow);
+            curr = curr->prev;
+        }
+
+        pathTotalValue += curr->number;
+        weights.push_back(pathTotalWeight);
+        values.push_back(pathTotalValue);
+        curr = t;
+        while(curr != s) {
+            Edge *e1 = findEdge(curr->prev, curr);
+            e1->flow -= pathFlow;
+            Edge *e2 = findEdge(curr, curr->prev);
+            if (e2 != nullptr) e2->flow += pathFlow;
+            curr = curr->prev;
+        }
+    }
+}
+
 /*
 findEdge -> Complejidad: O(n)
 */

@@ -44,8 +44,9 @@ class Graph {
         int getMaxDist(vector<Edge*> qs);
         bool bfs(Node *s, Node *t);
         
-
         Node *getMinDist(vector<Node*> qs);
         void remove(vector<Node*> &qs, Node *q);
         int getLength(Node *u, Node *v);
+
+        void findPaths(Node *s, Node *t, vector<int> &weights, vector<int> &values);
 };
