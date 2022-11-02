@@ -12,6 +12,16 @@ using namespace std;
 
 #define tam 10000
 
+int getMinVal(vector<int> values) {
+    int minVal = values[0];
+    for (int i = 0; i < values.size(); i++) {
+        if (values[i] < minVal) {
+            minVal = values[i];
+        }
+    }
+    return minVal;
+}
+
 int main()
 {
     // LECTURA DE DATOS
@@ -31,6 +41,8 @@ int main()
         cin >> pesos[i];
     }
     cin >> W;
+    cout << endl;
+    cout << "W = " << W << endl;
 
     // CREAMOS EL GRAFO
     vector<Node *> nodes;
@@ -57,7 +69,13 @@ int main()
     Graph *g = new Graph(nodes, edges);
     vector<int> weights;
     vector<int> values;
+    cout << "Edges" << endl;
     g->printGraph();
+    cout << endl;
     g->findPaths(nodes[0], nodes[N], weights, values);
-    cout << "holo " << weights.size() << endl;
+    cout << "weights " << weights.size() << endl;
+    for (int i = 0; i < weights.size(); i++)
+    {
+        cout << "weight: " << weights[i] << " value: " << values[i] << endl;
+    }
 }

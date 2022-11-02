@@ -301,10 +301,10 @@ void Graph::findPaths(Node *s, Node *t, vector<int> &weights, vector<int> &value
     for(ei = edges.begin(); ei != edges.end(); ++ei) {
         (*ei)->flow = (*ei)->weight;
     }
-    cout << "bfs" << endl;
-    bool b = bfs(s, t);
-    cout << b << endl;
-    while(b) {
+    // bool b = bfs(s, t);
+    // cout << "bfs " << b << endl;
+    while(bfs(s, t)) {
+        // cout << "inside while" << endl;
         int pathTotalWeight = 0;
         int pathTotalValue = 0;
         Node *curr = t;
@@ -336,13 +336,9 @@ findEdge -> Complejidad: O(n)
 Edge *Graph::findEdge(Node *u, Node *v) {
     // Recorrer el vector de aristas (edges) para encontrar el arco entre nodos u y v
     Edge *e = nullptr;
-    vector<Edge*>::iterator ei;
-    for (ei = edges.begin(); ei != edges.end(); ++ei) {
-        if ((*ei)->first == u && (*ei)->second == v) {
-            cout << "first " << (*ei)->first->number << endl;
-            cout << "second " << (*ei)->second->number << endl;
-            e = *ei;
-            break;
+    for (Edge* e : edges) {
+        if (e->first == u && e->second == v) {
+            return e;
         }
     }
     return e;
@@ -376,14 +372,14 @@ bool Graph::bfs(Node *s, Node *t) {
         vector<Node*>::iterator v;
         vector<Node*> neighbors = getNeighbors(u);
         for (v = neighbors.begin(); v != neighbors.end(); ++v) {
-           cout << u->number << endl;
-           cout << (*v)->number << endl;
+        //    cout << u->number << endl;
+        //    cout << (*v)->number << endl;
            Edge *e = findEdge(u, *v);
            // Si el arco existe y no ha sido visitado
            if(e == nullptr) cout << "not exist" << endl;
            if(e != nullptr) {
-                cout << "exists" << endl;
-                cout << e->first->number << " " << e->second->number << endl;
+                // cout << "exists" << endl;
+                // cout << e->first->number << " " << e->second->number << endl;
                 if(!(*v)->visited && e->flow > 0) {
                     // Meter vecino v al vector de nodos
                     q.push_back(*v);
@@ -391,11 +387,11 @@ bool Graph::bfs(Node *s, Node *t) {
                     (*v)->prev = u;
                     // Actualizar nodo visitado
                     (*v)->visited = true;
-                    cout << "visited: " << (*v)->number << endl;
-                    cout << "q size: " << q.size() << endl;
+                    // cout << "visited: " << (*v)->number << endl;
                }
            }
         }
+        // cout << "q size: " << q.size() << endl;
     }
     // Regresar si el nodo sink (t) ha sido visitado
     return t->visited == true;
