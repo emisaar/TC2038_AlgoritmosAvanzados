@@ -55,5 +55,9 @@ int main()
     }
 
     Graph *g = new Graph(nodes, edges);
-    g->runFordFulkerson(nodes[0], nodes[N + 1]);
+    vector<int> weights;
+    vector<int> values;
+    g->printGraph();
+    g->findPaths(nodes[0], nodes[N], weights, values);
+    cout << "holo " << weights.size() << endl;
 }

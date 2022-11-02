@@ -28,12 +28,12 @@ class Graph {
     public:
         vector<Node*> nodes;
         vector<Edge*> edges;
-        Node *s;
+        Node *source;
 
         Graph(vector<Node*> _nodes, vector<Edge*> _edges);
 
         vector <Node*> getNeighbors(Node *n);
-        void printDijkstra();
+        void printGraph();
         void printFloyd(vector<vector<int> > matrix);
 
         void runDijkstra(Node *source);

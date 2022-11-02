@@ -57,13 +57,12 @@ Método printDijkstra -> Complejidad: O(n)
 Itera sobre los vectores nodes y edges para acceder e 
 imprimir los atributos de los nodos y aristas.
 */
-void Graph::printDijkstra(){
-    vector<Node*>::iterator ni;
-        for (ni = nodes.begin(); ni != nodes.end(); ++ni) {
-            if((*ni)->prev != nullptr || (*ni)->distance != 0) {
-                cout << "Node: " << s->number << " to node " << (*ni)->number << " Dist: " << (*ni)->distance << endl;
-            }
-        }
+void Graph::printGraph(){
+    vector<Edge*>::iterator ei;
+    for(ei = edges.begin(); ei != edges.end(); ++ei) {
+        cout << (*ei)->first->number << " -> " << (*ei)->second->number << " : " << (*ei)->weight << endl;
+    }
+        
 }
 
 /*
@@ -93,7 +92,7 @@ Lleva a cabo lógica del algoritmo.
 */
 void Graph::runDijkstra(Node *source) {
     // Al ejecutar Dijkstra, guardamos el Nodo inicial para ejecutar el print.
-    s = source;
+    source = source;
     // Vector de nodos Q
     vector<Node*> Q;
     // Iterador de nodos
@@ -296,17 +295,21 @@ int Graph::runFordFulkerson(Node *s, Node *t) {
 }
 
 void Graph::findPaths(Node *s, Node *t, vector<int> &weights, vector<int> &values) {
+    source = s;
     int pathFlow = INT_MAX;
     vector<Edge*>::iterator ei;
     for(ei = edges.begin(); ei != edges.end(); ++ei) {
         (*ei)->flow = (*ei)->weight;
     }
-    while(bfs(s, t)) {
+    cout << "bfs" << endl;
+    bool b = bfs(s, t);
+    cout << b << endl;
+    while(b) {
         int pathTotalWeight = 0;
         int pathTotalValue = 0;
         Node *curr = t;
         while (curr != s) {
-           if(curr != t) pathTotalValue += curr->number;
+            if(curr != t) pathTotalValue += curr->number;
             Edge *e1 = findEdge(curr->prev, curr);
             pathTotalWeight += e1->weight;
             pathFlow = min(pathFlow, e1->flow);
@@ -333,9 +336,13 @@ findEdge -> Complejidad: O(n)
 Edge *Graph::findEdge(Node *u, Node *v) {
     // Recorrer el vector de aristas (edges) para encontrar el arco entre nodos u y v
     Edge *e = nullptr;
-    for (Edge* e : edges) {
-        if (e->first == u && e->second == v) {
-            return e;
+    vector<Edge*>::iterator ei;
+    for (ei = edges.begin(); ei != edges.end(); ++ei) {
+        if ((*ei)->first == u && (*ei)->second == v) {
+            cout << "first " << (*ei)->first->number << endl;
+            cout << "second " << (*ei)->second->number << endl;
+            e = *ei;
+            break;
         }
     }
     return e;
@@ -347,10 +354,10 @@ bfs -> Complejidad: O(n^2)
 */
 bool Graph::bfs(Node *s, Node *t) {
    // Inicializar nodos como no visitados
-    for (Node* n : nodes) {
-        n->visited = false;
+    vector<Node*>::iterator ni;
+    for(ni = nodes.begin(); ni != nodes.end(); ++ni) {
+        (*ni)->visited = false;
     }
-
     // Crear vector de nodos
     vector<Node*> q;
     // Agregar nodo source (s) al vector
@@ -366,21 +373,29 @@ bool Graph::bfs(Node *s, Node *t) {
         // Eliminar primer elemento del vector
         remove(q, u);
         // Iterar sobre el vector de los vecinos de u
-       for (Node* v : getNeighbors(u)) {
-        // Buscar el arco entre nodo u y vecino v
-           Edge *e = findEdge(u, v);
+        vector<Node*>::iterator v;
+        vector<Node*> neighbors = getNeighbors(u);
+        for (v = neighbors.begin(); v != neighbors.end(); ++v) {
+           cout << u->number << endl;
+           cout << (*v)->number << endl;
+           Edge *e = findEdge(u, *v);
            // Si el arco existe y no ha sido visitado
-           if(e != nullptr){
-               if(!v->visited && e->flow > 0) {
+           if(e == nullptr) cout << "not exist" << endl;
+           if(e != nullptr) {
+                cout << "exists" << endl;
+                cout << e->first->number << " " << e->second->number << endl;
+                if(!(*v)->visited && e->flow > 0) {
                     // Meter vecino v al vector de nodos
-                   q.push_back(v);
-                   // Actualizar previo
-                   v->prev = u;
-                   // Actualizar nodo visitado
-                   v->visited = true;
+                    q.push_back(*v);
+                    // Actualizar previo
+                    (*v)->prev = u;
+                    // Actualizar nodo visitado
+                    (*v)->visited = true;
+                    cout << "visited: " << (*v)->number << endl;
+                    cout << "q size: " << q.size() << endl;
                }
            }
-       }
+        }
     }
     // Regresar si el nodo sink (t) ha sido visitado
     return t->visited == true;

@@ -32,6 +32,6 @@ Se inicializa el prev (Nodo previo) como nullptr ya
 */
 Node::Node(int _number){
     number = _number;
-    distance = 10000;
+    distance = 1000;
     prev = nullptr;
 }
