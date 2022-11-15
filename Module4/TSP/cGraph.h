@@ -24,13 +24,13 @@ https://www.youtube.com/watch?v=_UcOALraATY
 
 using namespace std;
 
-class Graph {
+class cGraph {
     public:
         vector<Node*> nodes;
         vector<Edge*> edges;
         Node *source;
 
-        Graph(vector<Node*> _nodes, vector<Edge*> _edges);
+        cGraph(vector<Node*> _nodes, vector<Edge*> _edges);
 
         vector <Node*> getNeighbors(Node *n);
         void printGraph();
