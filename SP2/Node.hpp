@@ -3,7 +3,7 @@
 //  Alejandro Díaz Villagómez | A01276769
 //  Emiliano Saucedo Arriola  | A01659258
 //
-//  Fecha: 07/11/2022
+//  Fecha: 17/11/2022
 
 #ifndef Node_hpp
 #define Node_hpp

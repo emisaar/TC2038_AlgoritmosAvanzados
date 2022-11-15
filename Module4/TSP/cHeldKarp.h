@@ -1,12 +1,16 @@
 #pragma once
-#include "cGraph.h"
-#include "cFunctionP.h"
+#include "Graph.hpp"
+#include "cFunctionG.h"
 using namespace std;
 
 class HeldKarp{
-    vector<FunctionG*> prevResults;
-    cGraph *g;
+public:
+  vector<vector<FunctionG*>> prev_results;
+  Graph* g;
 
-    HeldKarp(cGraph *_g);
-    vector<Node*> findHamilton(Node *start);
-}
+  HeldKarp(Graph* _g);
+  vector<int> findHamilton(Node* start);
+  void findHamilton(Node*, int size);
+  vector<int> values_without(vector<int> v, int to_remove);
+  void combinationUntil(vector<int>& arr, int n, int r, int index, vector<int>& data, int i, vector<int>& combos);
+};

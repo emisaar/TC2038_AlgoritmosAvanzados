@@ -3,160 +3,185 @@
 //  Alejandro Díaz Villagómez | A01276769
 //  Emiliano Saucedo Arriola  | A01659258
 //
-//  Fecha: 07/11/2022
+//  Fecha: 17/11/2022
 
 #include "Graph.hpp"
+#include "GSearch.hpp"
 #include "DisjointSets.hpp"
+#include <fstream>
 #include <iostream>
 using namespace std;
 
-void FindMaxProfit(int W, vector<int> &weights, vector<int> &values);
+//Usaremos variables globales
+vector<vector<int>> matDistances, matMaxFlows;
+vector<pair<float, float>> coordenates;
 
-int main() {
-    cout << "DIJKSTRA AND FLOYD-WARSHALL ALGORITHM: " << endl;
-    int n; cin >> n;
-    
-    vector<vector<int>> matGraph;
-    for (int i = 0; i < n; i++){
-        vector<int> row;
-        for (int j = 0; j < n; j++){
-            int input; cin >> input;
-            row.push_back(input);
-        }
-        matGraph.push_back(row);
-    }
-    
-    Graph* g = new Graph(matGraph);
-    /*
-    g->Dijkstra();
-    g->FloydWarshall();
-    cout << g->runFordFulkerson(1, (int)matGraph.size()) << endl;
-     */
-    
-    
-    /*
-    cout << "Knapsack problem\n\nINPUT:\n";
-    // LECTURA DE DATOS
-    // N = Número de elementos
-    // V = Valores de los elementos
-    // P = Pesos de los elementos
-    // W = Peso máximo
-    int N, W;
-    cin >> N;
-    int pesos[N], valores[N];
-    for (int i = 0; i < N; i++){
-        cin >> valores[i];
-    }
-    
-    for (int i = 0; i < N; i++){
-        cin >> pesos[i];
-    }
-    
-    cin >> W;
-    cout << endl;
-    
-    // CREAMOS EL GRAFO
-    vector<Node *> nodes;
-    vector<Edge *> edges;
-    for (int i = 0; i < N; i++){
-        Node *n = new Node(valores[i]);
-        nodes.push_back(n);
-    }
-    // Representa el nodo "x"
-    nodes.push_back(new Node(1000));
-    
-    for (int i = 0; i < nodes.size() - 1; i++){
-        for (int j = i + 1; j < nodes.size(); j++){
-            // if (j == nodes.size() - 1) break;
-            // Edge *e = new Edge(nodes[i], nodes[j], pesos[i] * -1);
-            Edge *e = new Edge(nodes[i], nodes[j], pesos[i]);
-            edges.push_back(e);
-        }
-    }
-    
-    Graph *g = new Graph(nodes, edges);
-    vector<int> weights;
-    vector<int> values;
-    //    cout << "Edges" << endl;
-    //    g->printGraph();
-    cout << endl;
-    for (int i = 0; i < nodes.size() - 1; i++){
-        g->findPaths(nodes[i], nodes[N], weights, values);
-    }
-    
-    cout << "weights " << weights.size() << endl;
-    for (int i = 0; i < weights.size(); i++){
-        cout << "weight: " << weights[i] << " value: " << values[i] << endl;
-    }
-    
-    FindMaxProfit(W, weights, values);
-    */
-}
 
-void FindMaxProfit(int W, vector<int> &weights, vector<int> &values){
-    pair<int, int> maxProfit;
-    maxProfit = make_pair(-1000, -1000);
-    for (int i = 0; i < weights.size(); i++){
-        if (weights[i] <= W and values[i] > maxProfit.second)
-            maxProfit = make_pair(weights[i], values[i]);
-    }
-    
-    cout << "OUTPUT:\n\tGanancia Máxima: " << maxProfit.second << "\n\tPeso en la mochila: " << maxProfit.first << "\n\n";
-}
-
+// ============================================================= LECTURA DE ARCHIVO
 /*
-input
-4
-0 2 -1 3
--1 0 1 5
-2 3 0 -1
-3 -1 4 0
- 
- 
- *Dijkstra marcará error!!*
-4
-0 5 -1 10
--1 0 3 -1
--1 -1 0 1
--1 -1 -1 0
- 
- 
- runFordFulkerson
-6
-0 16 13 0 0 0
-0 0 10 12 0 0
-0 4 0 0 14 0
-0 0 9 0 0 20
-0 0 0 7 0 4
-0 0 0 0 0 0
- 
- 
-Tarea 3.3 -> matriz
-4
-0 4 4 4
-0 0 5 5
-0 0 0 1
-0 0 0 0
- 
- R = 3
-3
-1
-2
-3
-4
-5
-1
-4
- 
- R = 70
-4
-10
-40
-30
-20
-4
-3
-5
-2
-8
-*/
+ Lectura de un archivo de entrada que contiene la información de un grafo
+ representado en forma de una matriz de adyacencias con grafos ponderados.
+ Entrada:
+    a) Un numero entero N que representa el número de colonias en la ciudad
+    b) Matriz cuadrada de N x N que representa el grafo con las distancias
+       en kilómetros entre las colonias de la ciudad
+    c) Matriz cuadrada de N x N que representa las capacidades máximas de
+       flujo de datos entre colonia i y colonia j
+    d) Lista de N pares ordenados de la forma (A,B) que representan la
+       ubicación en un plano coordenado de las centrales
+ */
+// ============================================================= PROTOTIPOS DE FUNCIONES ADICIONALES
+void readFile(string s);
+void info2program(vector<string> data);
+vector<vector<int>> createMatrix(vector<string> vec, int start, int end);
+vector<pair<float, float>> readCoordenates(vector<string> vec, int start);
+void printVec2d(vector<vector<int>> mat);
+void printCoord(vector<pair<int, int>> vec);
+
+
+
+
+
+// ============================================================= FUNCIÓN PRINCIPAL
+int main() {
+    //Cambiar nombre de la ruta!!!
+    readFile("CasoPrueba.txt");
+    
+    //1) Forma de cablear las colonias con fibra. (lista de arcos de la forma (A,B))
+    cout << "===================================== PREGUNTA 1: CABLEADO\n";
+    Graph* g = new Graph(matDistances);
+    cout << "\tFloyd-Warshall:\n";
+    g->FloydWarshall();
+    cout << "\tKruskal:\n";
+    g->runKruskal();
+    
+    
+    //2) Ruta a seguir por el personal que reparte correspondencia
+    cout << "\n===================================== PREGUNTA 2: MEJOR RUTA\n";
+    
+    //3) Valor de flujo máximo de información del nodo inicial al nodo final
+    Graph* g2 = new Graph(matMaxFlows);
+    cout << "\n===================================== PREGUNTA 3: FLUJO MÁXIMO\n\tFlujo Máximo de Información: "
+    << g2->runFordFulkerson(1, (int)matDistances.size()) << endl;;
+    
+    
+    //4) Lista de polígonos (cada elemento es una lista de puntos de la forma (x,y))
+    cout << "\n===================================== PREGUNTA 4: LISTA DE SUCURSALES\n";
+    GSearch search;
+    vector<Point> vp;
+    for (pair<float, float> p : coordenates){
+        vp.push_back(Point(p.first, p.second));
+    }
+    cout << "\tDame la nueva coordenada de la sucursal: ";
+    int x, y; cin >> x >> y;
+    vp.push_back(Point(x, y));
+    cout << search.calculaDistMinima(vp) << endl;
+}
+
+
+
+// ============================================================= FUNCIONES AUXILIARES
+//Función para abrir el archivo
+void readFile(string s){
+    ifstream lector(s);
+    //No se pudo leer/abrir el archivo
+    if (lector.fail()){
+        cout << "\nError en la carga del archivo" << endl;
+        exit(1);
+    }
+    string line;
+    vector<string> DataArray;
+    while (getline(lector, line)){
+        //NO líneas en blanco
+        if (line.size() != 0){
+            DataArray.push_back(line);
+        }
+    }
+    info2program(DataArray);
+}
+
+
+void info2program(vector<string> data){
+    //Número de colonias
+    int num_nodes = stoi(data[0]);
+    
+    //Distancias en kilómetros entre las colonias de la ciudad
+    matDistances = createMatrix(data, 1, num_nodes + 1);
+    
+    //Capacidades máximas de flujo de datos entre colonia i y colonia j
+    matMaxFlows = createMatrix(data, num_nodes + 1, 2 * num_nodes + 1);
+    
+    //Ubicación en un plano coordenado de las centrales
+    coordenates = readCoordenates(data, 2 * num_nodes + 1);
+}
+
+
+vector<vector<int>> createMatrix(vector<string> vec, int start, int end){
+    vector<vector<int>> mat2d;
+    
+    vector<string>::iterator vs;
+    for (vs = vec.begin() + start; vs != vec.begin() + end; ++vs){
+        string words = *vs, str = "";
+        vector<int> nums;
+        for (int i = 0; i < words.size(); i++){
+            if (i == words.size() - 1){
+                str += words[i];
+                int num = stoi(str);
+                nums.push_back(num);
+            }
+            else if (words[i] == ' '){
+                int num = stoi(str);
+                nums.push_back(num);
+                str = "";
+            }
+            else str += words[i];
+        }
+        mat2d.push_back(nums);
+    }
+    return mat2d;
+}
+
+vector<pair<float, float>> readCoordenates(vector<string> vec, int start){
+    vector<pair<float, float>> vecCoord;
+    
+    vector<string>::iterator vs;
+    for (vs = vec.begin() + start; vs != vec.end(); ++vs){
+        string words = *vs, str = "";
+        pair<int, int> coords;
+        for (int i = 1; i < words.size(); i++){
+            if (words[i] == ','){
+                float num = stof(str);
+                coords.first = num;
+                str = "";
+            }
+            else if (words[i] == ')'){
+                float num = stof(str);
+                coords.second = num;
+                str = "";
+            }
+            else str += words[i];
+        }
+        vecCoord.push_back(coords);
+    }
+    return vecCoord;
+}
+
+
+
+void printVec2d(vector<vector<int>> mat){
+    for (int i = 0; i < mat.size(); i++){
+        for (int j = 0; j < mat.size(); j++){
+            cout << mat[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+void printCoord(vector<pair<int, int>> vec){
+    for (pair<int, int> p : vec){
+        cout << p.first << " " << p.second << endl;
+    }
+}
+
+
+

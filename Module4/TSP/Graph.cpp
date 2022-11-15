@@ -1,20 +1,20 @@
-//  Actividad Integradora 2
+//  Actividad 3.3
+//  Implementación de "Knapsack problem"
 //
 //  Alejandro Díaz Villagómez | A01276769
 //  Emiliano Saucedo Arriola  | A01659258
 //
-//  Fecha: 17/11/2022
+//  Fecha: 03/11/2022
 
 #include "Graph.hpp"
-#include "DisjointSets.hpp"
 #include <limits.h>
 
 #define INFINITO INT_MAX
 
 //----------------------------------------------------------------------------------------------CONSTRUCTORES
 //Complejidad --> O(n^2)
-Graph::Graph(vector<vector<int>> matDists){
-    int numNodos = (int)matDists.size();
+Graph::Graph(vector<vector<int>> matGraph){
+    int numNodos = (int)matGraph.size();
     vector<Node*> _nodes;
     vector<Edge*> _edges;
     
@@ -28,32 +28,21 @@ Graph::Graph(vector<vector<int>> matDists){
     for (int i = 0; i < numNodos; i++){
         for (int j = 0; j < numNodos; j++){
             //Significa que es el mismo nodo, o bien, no hay arista entre ambos nodos
-            if (matDists[i][j] == 0 or matDists[i][j] == -1)
+            if (matGraph[i][j] == 0 or matGraph[i][j] == -1)
                 continue;
             
             //Caso contrario, agregamos la arista al vector de Edges*
-            _edges.push_back(new Edge(_nodes[i], _nodes[j], matDists[i][j]));
+            _edges.push_back(new Edge(_nodes[i], _nodes[j], matGraph[i][j]));
         }
     }
     nodes = _nodes;
     edges = _edges;
 }
 
-//Complejidad --> O(1)
 Graph::Graph(vector<Node*> _nodes, vector<Edge*> _edges){
     nodes = _nodes;
     edges = _edges;
 }
-
-
-//----------------------------------------------------------------------------------------------PREGUNTA 1
-
-
-//----------------------------------------------------------------------------------------------PREGUNTA 2
-
-//----------------------------------------------------------------------------------------------PREGUNTA 3
-
-//----------------------------------------------------------------------------------------------PREGUNTA 4
 
 
 //----------------------------------------------------------------------------------------------DIJKSTRA
@@ -172,6 +161,8 @@ int Graph::getLength(Node* u, Node* v){
 //FUNCIÓN FLOYD-WARSHALL: Calcula el camino más corto con el algoritmo Floyd-Warshall
 //Complejidad --> O(n^3)
 void Graph::FloydWarshall(){
+    cout << "\n######## RUNNING FLOYD-WARSHALL ########" << endl;
+    
     //Preparamos la matriz
     vector<vector<int>> dist;
     int v = (int)nodes.size();
@@ -206,9 +197,11 @@ void Graph::FloydWarshall(){
     //Complejidad --> O(n^2)
     for (int i = 0; i < v; i++){
         for (int j = 0; j < v; j++){
-            if (dist[i][j] == INFINITO or dist[i][j] == 0) continue;
-            else cout << "\tArco: (" << to_string(i + 1) << ", " << to_string(j + 1) << ")\t\tDistancia: " << dist[i][j] << "\tKm\n";
+            if (dist[i][j] == INFINITO)
+                cout << "\t∞ ";
+            else cout << "\t" << dist[i][j];
         }
+        cout << endl;
     }
     cout << endl;
 }
@@ -329,7 +322,6 @@ vector<Node*> Graph::getNeighbors2(Node *n){
 //FUNCIÓN FIND-PATHS: Función que resuelve "The Knapsack Problem" con grafos
 //Complejidad --> O(n^3 * m)
 void Graph::findPaths(Node *s, Node *t, vector<int> &weights, vector<int> &values) {
-    Node* source = s;
     int pathFlow = INT_MAX;
     vector<Edge*>::iterator ei;
     for(ei = edges.begin(); ei != edges.end(); ++ei) {
@@ -369,10 +361,59 @@ void Graph::printGraph(){
     vector<Edge*>::iterator ei;
     for(ei = edges.begin(); ei != edges.end(); ++ei) {
         cout << (*ei)->first->number << " -> " << (*ei)->second->number << " : " << (*ei)->weight << endl;
-    }       
+    }
+        
 }
 
+
 //----------------------------------------------------------------------------------------------KRUSKAL'S ALGORITHM
+
+// FUNCIÓN MAKESET: Función para crear un conjunto de nodos
+// Complejidad --> O(n)
+void Graph::makeSet(Node *n){
+   vector<Node*> set;
+   set.push_back(n);
+   sets.push_back(set);
+}
+
+// FUNCIÓN FINDSET: Función para encontrar el conjunto de un nodo
+// Complejidad --> O(n^2)
+vector<Node*> Graph::findSet(Node *n){
+    vector<vector<Node*>>::iterator si;
+    for(si = sets.begin(); si != sets.end(); ++si) {
+        vector<Node*>::iterator ni;
+        for(ni = (*si).begin(); ni != (*si).end(); ++ni) {
+            if((*ni) == n) {
+                return (*si);
+            }
+        }
+    }
+    return vector<Node*>();
+}
+
+// FUNCIÓN UNION: Función para unir dos conjuntos
+// Complejidad --> O(n^2)
+void Graph::doUnion(vector<Node*> a, vector<Node*> b){
+    // UNION
+    int m = max(a.size(), b.size());
+    vector<Node*> vec(a.size() + b.size());
+
+    vector<Node*>::iterator it;
+    it = set_union(a.begin(), a.end(), b.begin(), b.end(), vec.begin());
+    vec.resize(it - vec.begin());
+
+    // BUSCAR PARA REEMPLAZAR
+    vector<vector<Node*>>::iterator si;
+    for (si = sets.begin() ; si != sets.end() ; ++si){
+        vector<Node*> set = *si;
+        vector<Node*>::iterator ni;
+
+        for (ni = set.begin() ; ni != set.end() ; ++ni){
+            if ((*ni) == a[0]) (*si) = vec;
+            if ((*ni) == b[0]) (*si).clear();
+        }
+    }
+}
 
 // FUNCIÓN COMPAREWEIGHT: Función para comparar los pesos de dos aristas
 // Complejidad --> O(1)
@@ -383,15 +424,13 @@ bool Graph::compareWeight(Edge* a, Edge* b){
 // FUNCIÓN KRUSKAL: Función para encontrar el árbol de expansión mínima
 // Compljidad --> O(n^2 * m)
 void Graph::runKruskal() {
-
-    DisjointSets ds;
     // F = {}
     vector<Edge*> F;
     vector<Edge*>::iterator ei;
     // For each vertex v in G.V do MAKE-SET(v) 
     for(ei = edges.begin(); ei != edges.end(); ++ei) {
-        ds.makeSet((*ei)->first);
-        ds.makeSet((*ei)->second);
+        makeSet((*ei)->first);
+        makeSet((*ei)->second);
     }
 
     // sort the edges of G.E by weight
@@ -399,13 +438,13 @@ void Graph::runKruskal() {
 
     // For each edge (u, v) in G.E
     for(ei = edges.begin(); ei != edges.end(); ++ei) {
-        vector<Node*> set1 = ds.findSet((*ei)->first);
-        vector<Node*> set2 = ds.findSet((*ei)->second);
+        vector<Node*> set1 = findSet((*ei)->first);
+        vector<Node*> set2 = findSet((*ei)->second);
         // If FIND-SET(u) != FIND-SET(v)
         if(set1 != set2) {
             // F = F U {(u, v)} U {(v, u)}
             F.push_back((*ei));
-            ds.do_union(set1, set2);
+            doUnion(set1, set2);
         }
     }
 
@@ -415,5 +454,4 @@ void Graph::runKruskal() {
     for(ki = F.begin(); ki != F.end(); ++ki) {
         cout << "\tArco: " <<(*ki)->first->number << " -> " << (*ki)->second->number << ": " << (*ki)->weight << endl;
     }
-
 }

@@ -3,7 +3,7 @@
 //  Alejandro Díaz Villagómez | A01276769
 //  Emiliano Saucedo Arriola  | A01659258
 //
-//  Fecha: 07/11/2022
+//  Fecha: 17/11/2022
 
 #ifndef DisjointSets_hpp
 #define DisjointSets_hpp
@@ -22,7 +22,7 @@ class DisjointSets{
     public:
         vector<vector<Node*>> sets;
 
-        DisjointSets();
+        // DisjointSets();
         void makeSet(Node* u);
         vector<Node*> findSet(Node* u);
         void do_union(vector<Node*> a, vector<Node*> b);

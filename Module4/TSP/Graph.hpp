@@ -1,9 +1,10 @@
-//  Actividad Integradora 2
+//  Actividad 3.3
+//  Implementación de "Knapsack problem"
 //
 //  Alejandro Díaz Villagómez | A01276769
 //  Emiliano Saucedo Arriola  | A01659258
 //
-//  Fecha: 17/11/2022
+//  Fecha: 03/11/2022
 
 #ifndef Graph_hpp
 #define Graph_hpp
@@ -23,7 +24,7 @@ public:
     vector<Edge*> edges;
     
     //Constructores
-    Graph(vector<vector<int>> matDists);
+    Graph(vector<vector<int>> matGraph);
     Graph(vector<Node*> _nodes, vector<Edge*> _edges);
     
     //Función para encontrar a los vecinos de n en un vector Q
@@ -71,6 +72,10 @@ public:
     //Función para imprimir las aristas del grafo
     void printGraph();
 
+    vector<vector<Node*>> sets;
+    void makeSet(Node* n);
+    vector<Node*> findSet(Node* n);
+    void doUnion(vector<Node*> a, vector<Node*> b);
     static bool compareWeight(Edge* a, Edge* b);
 
     void runKruskal();
