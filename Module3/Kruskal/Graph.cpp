@@ -364,3 +364,94 @@ void Graph::printGraph(){
     }
         
 }
+
+
+//----------------------------------------------------------------------------------------------KRUSKAL'S ALGORITHM
+
+// FUNCIÓN MAKESET: Función para crear un conjunto de nodos
+// Complejidad --> O(n)
+void Graph::makeSet(Node *n){
+   vector<Node*> set;
+   set.push_back(n);
+   sets.push_back(set);
+}
+
+// FUNCIÓN FINDSET: Función para encontrar el conjunto de un nodo
+// Complejidad --> O(n^2)
+vector<Node*> Graph::findSet(Node *n){
+    vector<vector<Node*>>::iterator si;
+    for(si = sets.begin(); si != sets.end(); ++si) {
+        vector<Node*>::iterator ni;
+        for(ni = (*si).begin(); ni != (*si).end(); ++ni) {
+            if((*ni) == n) {
+                return (*si);
+            }
+        }
+    }
+    return vector<Node*>();
+}
+
+// FUNCIÓN UNION: Función para unir dos conjuntos
+// Complejidad --> O(n^2)
+void Graph::doUnion(vector<Node*> a, vector<Node*> b){
+    // UNION
+    int m = max(a.size(), b.size());
+    vector<Node*> vec(a.size() + b.size());
+
+    vector<Node*>::iterator it;
+    it = set_union(a.begin(), a.end(), b.begin(), b.end(), vec.begin());
+    vec.resize(it - vec.begin());
+
+    // BUSCAR PARA REEMPLAZAR
+    vector<vector<Node*>>::iterator si;
+    for (si = sets.begin() ; si != sets.end() ; ++si){
+        vector<Node*> set = *si;
+        vector<Node*>::iterator ni;
+
+        for (ni = set.begin() ; ni != set.end() ; ++ni){
+            if ((*ni) == a[0]) (*si) = vec;
+            if ((*ni) == b[0]) (*si).clear();
+        }
+    }
+}
+
+// FUNCIÓN COMPAREWEIGHT: Función para comparar los pesos de dos aristas
+// Complejidad --> O(1)
+bool Graph::compareWeight(Edge* a, Edge* b){
+    return a->weight < b->weight;
+}
+
+// FUNCIÓN KRUSKAL: Función para encontrar el árbol de expansión mínima
+// Compljidad --> O(n^2 * m)
+void Graph::runKruskal() {
+    // F = {}
+    vector<Edge*> F;
+    vector<Edge*>::iterator ei;
+    // For each vertex v in G.V do MAKE-SET(v) 
+    for(ei = edges.begin(); ei != edges.end(); ++ei) {
+        makeSet((*ei)->first);
+        makeSet((*ei)->second);
+    }
+
+    // sort the edges of G.E by weight
+    sort(edges.begin(), edges.end(), compareWeight);
+
+    // For each edge (u, v) in G.E
+    for(ei = edges.begin(); ei != edges.end(); ++ei) {
+        vector<Node*> set1 = findSet((*ei)->first);
+        vector<Node*> set2 = findSet((*ei)->second);
+        // If FIND-SET(u) != FIND-SET(v)
+        if(set1 != set2) {
+            // F = F U {(u, v)} U {(v, u)}
+            F.push_back((*ei));
+            doUnion(set1, set2);
+        }
+    }
+
+    // Return F
+    cout << "MST: " << endl;
+    vector<Edge*>::iterator ki;
+    for(ki = F.begin(); ki != F.end(); ++ki) {
+        cout << "Arco: " <<(*ki)->first->number << " -> " << (*ki)->second->number << ": " << (*ki)->weight << endl;
+    }
+}

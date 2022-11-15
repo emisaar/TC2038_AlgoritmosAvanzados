@@ -71,6 +71,14 @@ public:
     
     //Función para imprimir las aristas del grafo
     void printGraph();
+
+    vector<vector<Node*>> sets;
+    void makeSet(Node* n);
+    vector<Node*> findSet(Node* n);
+    void doUnion(vector<Node*> a, vector<Node*> b);
+    static bool compareWeight(Edge* a, Edge* b);
+
+    void runKruskal();
 };
 
 
