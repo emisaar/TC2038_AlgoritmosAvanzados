@@ -452,6 +452,6 @@ void Graph::runKruskal() {
     cout << "MST: " << endl;
     vector<Edge*>::iterator ki;
     for(ki = F.begin(); ki != F.end(); ++ki) {
-        cout << "Arco: " <<(*ki)->first->number << " -> " << (*ki)->second->number << ": " << (*ki)->weight << endl;
+        cout << "\tArco: " <<(*ki)->first->number << " -> " << (*ki)->second->number << ": " << (*ki)->weight << endl;
     }
 }
