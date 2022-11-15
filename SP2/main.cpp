@@ -5,16 +5,17 @@
 //
 //  Fecha: 17/11/2022
 
+#include <fstream>
+#include <iostream>
 #include "Graph.hpp"
 #include "GSearch.hpp"
 #include "DisjointSets.hpp"
-#include <fstream>
-#include <iostream>
 using namespace std;
 
 //Usaremos variables globales
 vector<vector<int>> matDistances, matMaxFlows;
 vector<pair<float, float>> coordenates;
+
 
 
 // ============================================================= LECTURA DE ARCHIVO
@@ -45,7 +46,7 @@ void printCoord(vector<pair<int, int>> vec);
 // ============================================================= FUNCIÓN PRINCIPAL
 int main() {
     //Cambiar nombre de la ruta!!!
-    readFile("CasoPrueba.txt");
+    readFile("CasoPrueba2.txt");
     
     //1) Forma de cablear las colonias con fibra. (lista de arcos de la forma (A,B))
     cout << "===================================== PREGUNTA 1: CABLEADO\n";
@@ -69,13 +70,12 @@ int main() {
     cout << "\n===================================== PREGUNTA 4: LISTA DE SUCURSALES\n";
     GSearch search;
     vector<Point> vp;
+    int i = 1;
     for (pair<float, float> p : coordenates){
         vp.push_back(Point(p.first, p.second));
     }
-    cout << "\tDame la nueva coordenada de la sucursal: ";
-    int x, y; cin >> x >> y;
-    vp.push_back(Point(x, y));
-    cout << search.calculaDistMinima(vp) << endl;
+    search.calculaDistMinima2(vp);
+    cout << endl;
 }
 
 

@@ -8,6 +8,7 @@
 #include "GSearch.hpp"
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 //Complejidad: O(1)
 bool sortByX(Point a, Point b){
@@ -27,6 +28,7 @@ bool sortByY(Point a, Point b){
 //Complejidad: O(n(log n) + (log(n))^2)
 // 1) Generar lista de puntos
 float GSearch::calculaDistMinima(vector<Point> puntos){
+    vector<pair<int, float>> id_dist;
     float minDistLeft = 100000, minDistRight = 100000;
     
     // 2) Ordenar con respecto a "x"
@@ -90,4 +92,26 @@ float GSearch::calculaDistMinima(vector<Point> puntos){
         }
     }
     return min(minCinta, minDist);
+}
+
+
+bool sortPairByDist(pair<Point, float> a, pair<Point, float> b){
+    return a.second < b.second;
+}
+
+void GSearch::calculaDistMinima2(vector<Point> puntos){
+    vector<Point> comp(puntos.begin(), puntos.end() - 1);
+    Point casa = puntos[puntos.size() - 1];
+    vector<pair<Point, float>> dists;
+
+    for (int i = 0; i < comp.size(); i++){
+        float dist = sqrt(pow(comp[i].x - casa.x, 2) + pow(comp[i].y - casa.y, 2));
+        dists.push_back({comp[i], dist});
+    }
+    
+    for (int i = 0; i < comp.size(); i++){
+        cout << "\tDistancia de la casa (" << casa.x << ", " << casa.y << ") a la tienda (" << comp[i].x << ", " << comp[i].y << ") es: " << dists[i].second << endl;
+    }
+    sort(dists.begin(), dists.end(), sortPairByDist);
+    cout << "\n\tLa mejor opción es: (" << dists[0].first.x << ", " << dists[0].first.y << ") con una distancia de " << dists[0].second << endl;
 }

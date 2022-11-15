@@ -13,6 +13,7 @@
 class GSearch{
 public:
     float calculaDistMinima(vector<Point> puntos);
+    void calculaDistMinima2(vector<Point> puntos);
 };
 
 #endif /* GSearch_hpp */
