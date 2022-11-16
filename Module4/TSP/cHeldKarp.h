@@ -1,16 +1,22 @@
+
 #pragma once
 #include "Graph.hpp"
 #include "cFunctionG.h"
 using namespace std;
 
-class HeldKarp{
+class HeldKarp
+{
 public:
-  vector<vector<FunctionG*>> prev_results;
-  Graph* g;
+  vector<vector<FunctionG *>> prev_results;
+  Graph *g;
 
-  HeldKarp(Graph* _g);
-  vector<int> findHamilton(Node* start);
-  void findHamilton(Node*, int size);
+  HeldKarp(Graph *_g);
+  vector<int> findHamilton(Node *start);
+  void findHamilton(Node *start, int set_size);
   vector<int> values_without(vector<int> v, int to_remove);
-  void combinationUntil(vector<int>& arr, int n, int r, int index, vector<int>& data, int i, vector<int>& combos);
+  void findCombinations(vector<int> &arr, int n, int r, int index, vector<int> &data, int i, vector<vector<int>> &combos);
+  bool compareSets(vector<int> a, vector<int> b);
+  int findPrevValueG(int e, vector<int> s);
+  int findResultG(FunctionG *fg);
+  int findResultP(vector<FunctionG *> vfg, Node *start);
 };

@@ -46,7 +46,7 @@ void printCoord(vector<pair<int, int>> vec);
 // ============================================================= FUNCIÓN PRINCIPAL
 int main() {
     //Cambiar nombre de la ruta!!!
-    readFile("CasoPrueba2.txt");
+    readFile("CasoPrueba.txt");
     
     //1) Forma de cablear las colonias con fibra. (lista de arcos de la forma (A,B))
     cout << "===================================== PREGUNTA 1: CABLEADO\n";

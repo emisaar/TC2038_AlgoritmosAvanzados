@@ -56,6 +56,9 @@ public:
     
     //Función que encuentra la arista que conecta u y v (si existe)
     Edge* findEdge(Node *u, Node *v);
+
+    //Función que encuentra la arista que conecta u y v (si existe)
+    Edge* findEdge2(int u, int v);
     
     //Función que encuentra el nodo con el id int node (si existe)
     Node* findNode(int node);

@@ -275,6 +275,9 @@ Edge* Graph::findEdge(Node *u, Node *v) {
     return e;
 }
 
+Edge *Graph::findEdge2(int u, int v) {
+    return findEdge(findNode(u), findNode(v));
+}
 
 //FUNCIÓN BFS: Función que hace el recorrido en anchura en un grafo
 //Complejidad --> O(n^2)
