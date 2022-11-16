@@ -9,6 +9,7 @@
 #include <iostream>
 #include "Graph.hpp"
 #include "GSearch.hpp"
+#include "cHeldKarp.hpp"
 #include "DisjointSets.hpp"
 using namespace std;
 
@@ -59,7 +60,14 @@ int main() {
     
     //2) Ruta a seguir por el personal que reparte correspondencia
     cout << "\n===================================== PREGUNTA 2: MEJOR RUTA\n";
-    
+    cout << "El camino más corto es: " << endl;
+        HeldKarp *hk = new HeldKarp(g);
+        vector<int> path = hk->findHamilton(g->getStartNode());
+
+        for (int i = 0; i < path.size(); i++) {
+            cout << path[i] << " ";
+        }
+
     //3) Valor de flujo máximo de información del nodo inicial al nodo final
     Graph* g2 = new Graph(matMaxFlows);
     cout << "\n===================================== PREGUNTA 3: FLUJO MÁXIMO\n\tFlujo Máximo de Información: "

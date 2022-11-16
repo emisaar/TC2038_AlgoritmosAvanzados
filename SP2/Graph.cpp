@@ -271,6 +271,10 @@ Node* Graph::findNode(int node){
     return nullptr;
 }
 
+Node* Graph::getStartNode(){
+    return nodes[0];
+}
+
 //FUNCIÓN FIND-EDGE: Busca la arista que conecta a los nodos "u" y "v"
 //Complejidad --> O(n)
 Edge* Graph::findEdge(Node *u, Node *v) {
@@ -282,6 +286,9 @@ Edge* Graph::findEdge(Node *u, Node *v) {
     return e;
 }
 
+Edge *Graph::findEdge2(int u, int v) {
+    return findEdge(findNode(u), findNode(v));
+}
 
 //FUNCIÓN BFS: Función que hace el recorrido en anchura en un grafo
 //Complejidad --> O(n^2)
