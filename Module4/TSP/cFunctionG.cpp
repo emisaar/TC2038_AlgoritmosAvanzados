@@ -6,7 +6,7 @@ FunctionG::FunctionG(int _exit_val, vector<int> _set)
     vector<int>::iterator it;
     for (it = _set.begin(); it != _set.end(); ++it)
     {
-        _set.push_back(*it);
+        set.push_back(*it);
     }
     exit_val = _exit_val;
     result = 0;
@@ -20,6 +20,6 @@ string FunctionG::toString()
     {
         s += to_string(*it) + ", ";
     }
-    s += "})";
+    s += "}) = " + to_string(result);
     return s;
 }

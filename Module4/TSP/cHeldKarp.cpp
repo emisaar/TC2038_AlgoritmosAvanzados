@@ -13,6 +13,7 @@ vector<int> HeldKarp::findHamilton(Node *start)
 
     for (int s = 0; s < g->nodes.size() - 1; ++s)
     {
+        // cout << "s: " << s << endl;
         findHamilton(start, s);
     }
 
@@ -68,7 +69,6 @@ vector<int> HeldKarp::findHamilton(Node *start)
 
 void HeldKarp::findHamilton(Node *start, int set_size)
 {
-
     if (set_size == 0)
     {
         vector<FunctionG *> prev; // Prev es nuevo porque estamos en tamaño 0.
@@ -91,7 +91,6 @@ void HeldKarp::findHamilton(Node *start, int set_size)
     }
     else
     {
-
         vector<FunctionG *> curr;
         vector<FunctionG *> prev = prev_results[set_size - 1]; // prev es el vector anterior.
         // Ahora, los conjuntos salen de la combinación de la iteración anterior.
@@ -106,6 +105,7 @@ void HeldKarp::findHamilton(Node *start, int set_size)
             {                                      // Si no se encuentra
                 values.push_back((*gi)->exit_val); // Agregarlo para que sea único
             }
+            // cout << "values: " << (*gi)->exit_val << endl;
         }
 
         // B. Combínalos con conjutnos creados a partir de los demás valores, sin pasar del tamaño del conjunto. Si es necesario, hacer más conjuntos.
@@ -113,16 +113,23 @@ void HeldKarp::findHamilton(Node *start, int set_size)
         for (vi = values.begin(); vi != values.end(); ++vi)
         {
             vector<int> superset = values_without(values, *vi);
+            // cout << "superset: " << *vi << endl;
             vector<vector<int>> subsets;
             vector<int> d(set_size, 0);
             findCombinations(superset, superset.size(), set_size, 0, d, 0, subsets);
+            // cout << "find" << endl;
             vector<vector<int>>::iterator si;
             for (si = subsets.begin(); si != subsets.end(); ++si)
             {
+                // cout << "subsets:" << si->size() << endl;
                 FunctionG *fg = new FunctionG(*vi, *si);
+                // cout << "fg: "<< endl;
                 fg->result = findResultG(fg);
+                // cout << "result: " << fg->result << endl;
                 curr.push_back(fg);
+                // cout << "curr: " << fg->toString() << endl;
             }
+            // cout << "curr: " << curr.size() << endl;
         }
         prev_results.push_back(curr);
     }
@@ -202,6 +209,7 @@ int HeldKarp::findPrevValueG(int e, vector<int> s)
 // Es decir, g(exit, S) = min{ peso del arco de Si hasta exit + g(Si, S menos el elemento Si) }.
 int HeldKarp::findResultG(FunctionG *fg)
 {
+    // cout << "findResultG" << endl;
     vector<int>::iterator si;
     vector<int> candidates;
 
@@ -209,6 +217,7 @@ int HeldKarp::findResultG(FunctionG *fg)
     {
         vector<int> subset = values_without(fg->set, *si);
         Edge *e = g->findEdge2(fg->exit_val, *si);
+        // cout << "findResultG: " << fg->exit_val << " " << *si << " " << e->weight << endl;
         if (e != nullptr)
         {
             int c = e->weight + findPrevValueG(*si, subset);
