@@ -10,7 +10,7 @@
 #define Graph_hpp
 
 #pragma once
-#include "Edge.hpp"
+#include "Edge.h"
 #include <stdio.h>
 #include <iostream>
 #include <algorithm>

@@ -1,4 +1,3 @@
-
 #include "cFunctionG.h"
 
 FunctionG::FunctionG(int _exit_val, vector<int> _set)

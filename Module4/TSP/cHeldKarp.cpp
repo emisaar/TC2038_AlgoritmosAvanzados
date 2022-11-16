@@ -11,7 +11,7 @@ vector<int> HeldKarp::findHamilton(Node *start)
     // Guarda funcitionP (aún no está hecha, obtiene el mejor costo) para el tamaño size_i y agrega a un vector de functionP
     // Construye el path final usando el vector de functionP
 
-    for (int s = 0; s < g->nodes.size(); ++s)
+    for (int s = 0; s < g->nodes.size() - 1; ++s)
     {
         findHamilton(start, s);
     }
@@ -35,8 +35,7 @@ vector<int> HeldKarp::findHamilton(Node *start)
     vector<vector<FunctionG *>>::iterator ri;
     for (ri = prev_results.begin(); ri != prev_results.end(); ++ri)
     {
-        cout << endl
-             << "[" << endl;
+        cout << endl << "[" << endl;
         vector<FunctionG *>::iterator fi;
         for (fi = (*ri).begin(); fi != (*ri).end(); ++fi)
             cout << (*fi)->toString() << endl;
@@ -55,13 +54,12 @@ vector<int> HeldKarp::findHamilton(Node *start)
     valuesP.push_back(start->number); // Salir del inicio
 
     // Opcional. Mostrar el recorrido TSP obtenido:
-    cout << endl
-         << "TSP: ";
+    cout << endl << "TSP: ";
     vector<int>::reverse_iterator pi;
     for (pi = valuesP.rbegin(); pi != valuesP.rend(); ++pi)
     {
         if (pi + 1 != valuesP.rend())
-            cout << to_string(*pi) << " -> ";
+            cout << to_string(*pi) << " --> ";
         else
             cout << to_string(*pi) << endl;
     }
@@ -131,13 +129,12 @@ void HeldKarp::findHamilton(Node *start, int set_size)
 }
 
 // Regresa un vector de enteros con todos los valores excepto "to_remove"
-vector<int> HeldKarp::values_without(vector<int> v, int to_remove)
+vector<int> HeldKarp::values_without(vector<int> &v, int to_remove)
 {
     vector<int> result;
     vector<int>::iterator vi;
     for (vi = v.begin(); vi != v.end(); ++vi)
-        if ((*vi) != to_remove)
-            result.push_back(*vi);
+        if ((*vi) != to_remove) result.push_back(*vi);
     return result;
 }
 
@@ -162,8 +159,7 @@ void HeldKarp::findCombinations(vector<int> &arr, int n, int r, int index, vecto
         return;
     }
 
-    if (i >= n)
-        return;
+    if (i >= n) return;
     data[index] = arr[i];
     findCombinations(arr, n, r, index + 1, data, i + 1, combos);
     findCombinations(arr, n, r, index, data, i + 1, combos);
@@ -173,13 +169,10 @@ void HeldKarp::findCombinations(vector<int> &arr, int n, int r, int index, vecto
 // Los elementos no necesariamente están en el mismo orden.
 bool HeldKarp::compareSets(vector<int> a, vector<int> b)
 {
-    if (a.size() == b.size())
-    {
+    if (a.size() == b.size()){
         vector<int>::iterator ia;
-        for (ia = a.begin(); ia != a.end(); ++ia)
-        {
-            if (std::find(b.begin(), b.end(), *ia) == b.end())
-                return false;
+        for (ia = a.begin(); ia != a.end(); ++ia){
+            if (std::find(b.begin(), b.end(), *ia) == b.end()) return false;
         }
         return true;
     }
@@ -225,6 +218,7 @@ int HeldKarp::findResultG(FunctionG *fg)
         {
             cout << "Warning: Edge not found from: " << to_string(fg->exit_val) << "to" << to_string(*si) << "." << endl;
         }
+    }
 
         if (candidates.size() == 0)
         {
@@ -234,7 +228,6 @@ int HeldKarp::findResultG(FunctionG *fg)
 
         int minC = *std::min_element(candidates.begin(), candidates.end());
         return minC;
-    }
 }
 
 // Para encontrar el valor de P:
@@ -265,10 +258,7 @@ int HeldKarp::findResultP(vector<FunctionG *> vfg, Node *start)
     }
 
     int sizeS = vfg[minIndex]->set.size();
-    if (sizeS == 0)
-        return start->number;
-    if (sizeS == 2)
-        return vfg[minIndex]->set[0];
-    else
-        return vfg[minIndex]->set[1];
+    if (sizeS == 0) return start->number;
+    if (sizeS == 2) return vfg[minIndex]->set[0];
+    else return vfg[minIndex]->set[1];
 }
