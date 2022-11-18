@@ -58,13 +58,13 @@ vector<int> HeldKarp::findHamilton(Node *start)
     cout << "}" << endl;
 
     // Encontrar los valores P
-    vector<int> valuesP;
-    for (ri = prev_results.begin(); ri != prev_results.end(); ++ri) {
-        int p = findResultP(*ri, start);
-        valuesP.push_back(p);
-    }
+    vector<int> valuesP = findResultP(start);
+    // for (ri = prev_results.begin(); ri != prev_results.end(); ++ri) {
+    //     int p = findResultP(*ri, start);
+    //     valuesP.push_back(p);
+    // }
 
-    valuesP.push_back(start->number); // Salir del inicio
+    // valuesP.push_back(start->number); // Salir del inicio
 
     // Opcional. Mostrar el recorrido TSP obtenido
     cout << endl << "\tTSP: ";
@@ -252,28 +252,40 @@ FUNCIÓN findResultP:
 
     Complejidad: O(n^2) 
 */
-int HeldKarp::findResultP(vector<FunctionG *> vfg, Node *start) {
-    int minIndex = -1;
-    int currIndex = 0;
-    int minF = INT_MAX;
+vector<int> HeldKarp::findResultP(Node* start)
+{
+	vector<int> tsp = { start->number };
+	vector<int> tempSet;
+	int counter = 1;
+	for (int r = prev_results.size() - 1; r >= 0; r--)
+	{
+		vector<FunctionG*> gs = prev_results[r];
+		if (r == prev_results.size() - 1)
+		{
+			int step = -1;
+			if (gs[0]->set.size() > 1) step = gs[0]->set[1];
+			else step = gs[0]->set[0];
+			tempSet = values_without(gs[0]->set, step);
+			tsp.push_back(step);
+		}
+		else
+		{
+			int step = -1;
+			vector<FunctionG*>::iterator gi;
+			for (gi = gs.begin(); gi != gs.end(); ++gi)
+			{
+				if ((*gi)->exit_val == tsp[counter-1] && compareSets(tempSet, (*gi)->set))
+				{
+					if ((*gi)->set.size() > 1) step = (*gi)->set[1];
+					else if ((*gi)->set.size() == 1) step = (*gi)->set[0];
+					else step = start->number;
 
-    // Encontrar el mínimo valor de fg para el subset
-    vector<FunctionG *>::iterator fgi;
-    for (fgi = vfg.begin(); fgi != vfg.end(); ++fgi) {
-        if ((*fgi)->result < minF) {
-            minF = (*fgi)->result;
-            minIndex = currIndex;
-        }
-        currIndex++;
-    }
-
-    if (minIndex == -1) {
-        cout << "Warning: P function failed" << endl;
-        return -1;
-    }
-
-    int sizeS = vfg[minIndex]->set.size();
-    if (sizeS == 0) return start->number;
-    if (sizeS == 2) return vfg[minIndex]->set[0];
-    else return vfg[minIndex]->set[1];
+					tempSet = values_without((*gi)->set, step);
+					tsp.push_back(step);
+				}
+			}
+		}
+		counter++;
+	}
+	return tsp;
 }

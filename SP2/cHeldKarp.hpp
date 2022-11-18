@@ -23,5 +23,5 @@ class HeldKarp {
     bool compareSets(vector<int> a, vector<int> b);
     int findPrevValueG(int e, vector<int> s);
     int findResultG(FunctionG *fg);
-    int findResultP(vector<FunctionG *> vfg, Node *start);
+    vector<int> findResultP(Node *start);
 };
