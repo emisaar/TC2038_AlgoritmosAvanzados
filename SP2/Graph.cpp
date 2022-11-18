@@ -417,10 +417,10 @@ void Graph::runKruskal() {
     }
 
     // Return F
-    cout << "MST: " << endl;
+    cout << "\t\tMST: " << endl;
     vector<Edge*>::iterator ki;
     for(ki = F.begin(); ki != F.end(); ++ki) {
-        cout << "\tArco: " <<(*ki)->first->number << " -> " << (*ki)->second->number << ": " << (*ki)->weight << endl;
+        cout << "\t\tArco: " <<(*ki)->first->number << " -> " << (*ki)->second->number << ": " << (*ki)->weight << endl;
     }
 
 }

@@ -6,6 +6,7 @@
 //  Fecha: 17/11/2022
 
 #include "cHeldKarp.hpp"
+#include <limits.h>
 
 // CONSTRUCTOR HELDKARP
 // Complejidad: O(1)
@@ -15,7 +16,7 @@ HeldKarp::HeldKarp(Graph *_g)
 }
 
 // FUNCIÓN FINDHAMILTON
-// Complejidad: O(n^2) || O(n)
+// Complejidad: O(n^2 * 2^n)
 vector<int> HeldKarp::findHamilton(Node *start)
 {
     // Llama a findHamilton(start, size_i) donde size_i va de 0 a N-1
@@ -66,7 +67,7 @@ vector<int> HeldKarp::findHamilton(Node *start)
     valuesP.push_back(start->number); // Salir del inicio
 
     // Opcional. Mostrar el recorrido TSP obtenido
-    cout << endl << "TSP: ";
+    cout << endl << "\tTSP: ";
     vector<int>::reverse_iterator pi;
     for (pi = valuesP.rbegin(); pi != valuesP.rend(); ++pi) {
         if (pi + 1 != valuesP.rend())
