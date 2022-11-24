@@ -1,0 +1,31 @@
+Actividad Integradora 2
+
+Alumnos:
+    Alejandro Díaz Villagómez | A01276769
+    Emiliano Saucedo Arriola  | A01659258
+
+Profesor:
+    Sergio Ruiz Loza
+
+Fecha: 
+    17/11/2022
+
+
+
+Partes específicas del proyecto en las que trabajó cada quien:
+
+	PREGUNTA 1: Algoritmo de Floyd-Warshall && Kruskal
+	    1) Alejandro Díaz
+	    2) Emiliano Saucedo
+
+	PREGUNTA 2: Algoritmo de Held-Karp
+	    1) Alejandro Díaz 
+	    2) Emiliano Saucedo 
+
+	PREGUNTA 3: Flujo Máximo
+	    1) Alejandro Díaz 
+	    2) Emiliano Saucedo 
+
+	PREGUNTA 3: Búsqueda geométrica
+	    1) Alejandro Díaz 
+	    2) Emiliano Saucedo 
