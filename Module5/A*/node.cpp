@@ -19,6 +19,8 @@ Se inicializa el prev (Nodo previo) como nullptr ya
 */
 Node::Node(int _number){
     number = _number;
-    distance = 10000;
-    prev = nullptr;
+    // distance = 10000;
+    parent = nullptr;
+    // g = parent->g + h;
+    // f = g + h;
 }

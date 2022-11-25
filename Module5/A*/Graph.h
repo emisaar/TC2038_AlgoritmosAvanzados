@@ -4,6 +4,7 @@
 //  Graph.h
 
 #pragma once
+#include "Node.h"
 #include "Edge.h"
 #include <iostream>
 #include <algorithm>
@@ -16,6 +17,7 @@ class Graph {
         vector<Node*> nodes;
         vector<Edge*> edges;
         Node *s;
+        Node *goal;
 
         Graph(vector<Node*> _nodes, vector<Edge*> _edges);
 
@@ -24,7 +26,14 @@ class Graph {
         void printFloyd(vector<vector<int> > matrix);
         void runDijkstra(Node *source);
         void runFloyd();
-        Node *getMinDist(vector<Node*> qs);
+        Node *getMinF(vector<Node*> qs);
+        vector<Node*> constructPath(Node *goal);
         void remove(vector<Node*> &qs, Node *q);
         int getLength(Node *u, Node *v);
+
+        vector<Node*> runAStar(Node *source, Node *goal);
+        float heuristic(Node *u, Node *v);
+        vector<Node*> neighbors(Node *n);
+
+        Graph(vector<Node*> _nodes); 
 };

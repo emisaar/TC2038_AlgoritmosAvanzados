@@ -4,7 +4,7 @@
 //  graph.cpp
 
 #include "Graph.h"
-
+#include "math.h"
 /*
 Constructor de Graph (Grafo)
 Recibe como parámetro:
@@ -14,6 +14,10 @@ Recibe como parámetro:
 Graph::Graph(vector<Node*> _nodes, vector<Edge*> _edges){
     nodes = _nodes;
     edges = _edges;
+}
+
+Graph::Graph(vector<Node*> _nodes){
+    nodes = _nodes;
 }
 
 /*
@@ -38,110 +42,113 @@ vector<Node*> Graph::getNeighbors(Node *n){
     return neighbors;
 }
 
-/*
-Método printDijkstra -> Complejidad: O(n)
-Itera sobre los vectores nodes y edges para acceder e 
-imprimir los atributos de los nodos y aristas.
-*/
-void Graph::printDijkstra(){
-    vector<Node*>::iterator ni;
-        for (ni = nodes.begin(); ni != nodes.end(); ++ni) {
-            if((*ni)->prev != nullptr || (*ni)->distance != 0) {
-                cout << "Node: " << s->number << " to node " << (*ni)->number << " Dist: " << (*ni)->distance << endl;
-            }
-        }
-}
+vector<Node*> Graph::runAStar(Node *source, Node *goal) {
+    vector<Node*> openList; // Holds potential best path nodes that have not yet been visited, starting with the source node
+    vector<Node*> closedList; // Starts empty, holds nodes that have already been visited
+    openList = nodes;
 
-/*
-Método printFloyd() -> Complejidad O(n^2)
-Recibe:
-    - Una matriz (matrix)
-Recorre la matriz para imprimir los elementos de la misma en consola.
-*/
-
-void Graph::printFloyd(vector<vector<int> > matrix){
-    for (int i = 0; i < nodes.size(); i++) {
-        for (int j = 0; j < nodes.size(); j++) {
-                cout << matrix[i][j] << "|";
+    source->g = 0;
+    source->f = source->g + heuristic(source, goal);
+    /*
+    Core loop: Selects node from openList with lowest f value.
+    If it is the goal node, we are done. Otherwise, move it to the closedList
+    and add its neighbors to the openList.
+    Nodes create a reference to their parent node
+    */
+   int i = 0;
+    while (!openList.empty()) {
+        cout << "Open List (" << i << "): ";
+        vector<Node*>::iterator oi;
+        for(oi = openList.begin(); oi != openList.end(); ++oi) {
+            cout << (*oi)->number << " ";
         }
         cout << endl;
-    }
-}
 
-/*
-Método runDijkstra -> Complejidad: O((|V| + |E|)log(|V|))
-    Donde:
-        |V| -> número de nodos
-        |E| -> número de aristas
-Recibe:
-    - Nodo de origen (source).
-Lleva a cabo lógica del algoritmo.
-*/
-void Graph::runDijkstra(Node *source) {
-    // Al ejecutar Dijkstra, guardamos el Nodo inicial para ejecutar el print.
-    s = source;
-    // Vector de nodos Q
-    vector<Node*> Q;
-    // Iterador de nodos
-    vector<Node*>::iterator ni;
-    // Guardamos los nodos del grafo en el vector Q
-    for (ni = nodes.begin(); ni != nodes.end(); ++ni) {
-        // (*ni)->distance = 1000;
-        // (*ni)->prev = nullptr;
-        Q.push_back(*ni);
-    }
+        cout << "Closed List: ";
+        for(oi = closedList.begin(); oi != closedList.end(); ++oi) {
+            cout << (*oi)->number << " ";
+        }
+        cout << endl;
 
-
-    // Actualizar distancia a 0 para nodo inicial 
-    source->distance = 0;
-
-    // Mientras Q no esté vacía...
-    while (!Q.empty()) {
-        // Buscar nodo con la distancia más corta (u)
-        Node *u = getMinDist(Q);
-        // Eliminar nodo con menor distancia (u) del vector Q
-        remove(Q, u);
-        // Crear vector con los nodos vecinos al Nodo u
-        vector<Node*> neighbors = getNeighbors(u);
-
-        // Itera sobre los vecinos del Nodo u
-        for(ni = neighbors.begin(); ni != neighbors.end(); ++ni) {
-            // Para cada Nodo v del vector neighbors
-            Node *v = *ni;
-            // Alt corresponde a la suma de la distancia del Nodo u y la distancia entre el Nodo u y Nodo v
-            int alt = u->distance + getLength(u, v);
-            // Si hay algún camino más pequeño a v a través de u
-            if (alt < v->distance) {
-                // Actualiza distancia de v
-                v->distance = alt;
-                // Actualizar apuntador prev del Nodo v al Nodo u
-                v->prev = u;
+        Node *current = getMinF(openList); // Get node with lowest f value
+        if (current == goal) {
+            return constructPath(goal);
+        }
+        remove(openList, current); // Remove current from openList
+        closedList.push_back(current); // Add current to closedList
+        vector<Node*> neighbors = Graph::neighbors(current); // Get neighbors of current
+        cout << "Neighbors: ";
+        cout << "Node " << current->number << ": (" <<  current->x << ", " << current->y << ") " << endl;
+        for(oi = neighbors.begin(); oi != neighbors.end(); ++oi) {
+            cout << "Node " << (*oi)->number << ": (" <<  (*oi)->x << ", " << (*oi)->y << ") " << (*oi)->parent->number <<  ": (" <<  (*oi)->x << ", " << (*oi)->y << ") " << endl;
+        }
+        vector<Node*>::iterator ni;
+        for(ni = neighbors.begin(); ni != neighbors.end(); ++ni) { // For each neighbor in neighbors    
+            Node *neighbor = *ni;
+            if (find(closedList.begin(), closedList.end(), neighbor) == closedList.end()) { // if neighbor is not in closedList
+                neighbor->f = neighbor->g + heuristic(neighbor, goal); 
+                if (find(openList.begin(), openList.end(), neighbor) == openList.end()) { // if neighbor is not in openList
+                    openList.push_back(neighbor); // Add neighbor to openList
+                } else {
+                    Node* openNeighbor = *find(openList.begin(), openList.end(), neighbor); // Get neighbor from openList
+                    if (neighbor->g < openNeighbor->g) {
+                        openNeighbor->g = neighbor->g;
+                        openNeighbor->parent = neighbor->parent;
+                    }
+                }
             }
         }
+        i++;
     }
+    return vector<Node*>(); // If openList is empty, there's no path
 }
 
-/*
-Método getMinDist -> Complejidad: O(n)
-Recibe:
-    - Un vector de nodos (qs)
-Regresa el nodo con la menor distancia.
-Compara las distancias de los nodos del vector, guardando 
-el nodo con la distancia más corta.
-*/
-Node * Graph::getMinDist(vector<Node*> qs) {
-    Node *min = qs[0];
+float Graph::heuristic(Node *a, Node *b) {
+    cout << "Heuristic: " << sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2)) << endl;
+    return sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2));
+}
+
+vector<Node*> Graph::neighbors(Node *n) {
+    vector<Node*> neighbors = n->neighbors;
     vector<Node*>::iterator ni;
-    
-    // Recorrer el vector de nodos (qs)
+    for(ni = neighbors.begin(); ni != neighbors.end(); ++ni) {
+        Node *neighbor = *ni;
+        neighbor->g = n->g + 1;
+        neighbor->parent = n;
+    }
+    return neighbors;
+}
+
+vector <Node*> Graph::constructPath(Node *node) {
+    vector<Node*> path;
+    path.push_back(node);
+    while (node->parent != nullptr) {
+        node = node->parent;
+        path.push_back(node);
+    }
+    return path;
+}
+
+Node * Graph::getMinF(vector<Node*> qs) {
+    // Iterador de nodos
+    vector<Node*>::iterator ni;
+    // Nodo con menor distancia
+    Node *minF = qs[0];
+    // Itera sobre los nodos del vector
     for (ni = qs.begin(); ni != qs.end(); ++ni) {
-        // Si la distancia del nodo actual es menor a la distancia más corta encontrada anteriormente, actualiza min al Nodo actual.
-        if ((*ni)->distance < min->distance) {
-            min = *ni;
+        cout << "(*ni): " << (*ni)->f << " || minF: " << minF->f << endl;
+        // Si la distancia del Nodo actual es menor a la del Nodo con menor distancia
+        if ((*ni)->f < minF->f) {
+            // Actualiza Nodo con menor distancia
+            minF = *ni;
         }
     }
-    return min;
+    cout << "MinF: " << minF->number << endl;
+    // Regresa Nodo con menor distancia
+    return minF;
 }
+
+
 
 
 /*

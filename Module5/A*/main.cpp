@@ -3,183 +3,159 @@
 //  Fecha: 06/10/2022
 //  main.cpp
 
-/* Instrucciones:
-Escribe un programa en C++ que implemente los algoritmos de Dijkstra y Floyd para encontrar 
-la distancia más corta entre parejas de nodos en un grafo dirigido. 
-
-El programa debe leer un numero n seguido de n x n valores enteros no negativos que representan 
-una matriz de adyacencias de un grafo dirigido.
-El primer número representa el número de nodos, los siguientes valores en la matriz, el valor 
-en la posición (i, j) representan el peso de la arista del nodo i al nodo j. Si no hay una arista 
-entre el nodo i y el nodo j, el valor en la matriz debe ser -1.
-
-La salida del programa es, primero con el algoritmo de Dijkstra la distancia del nodo i al nodo j 
-para todos los nodos, y luego, la matriz resultado del algoritmo de Floyd.
-*/
-
-/* Teoría
-Dijkstra: Algoritmo utilizado para encontrar los caminos más cortos desde un nodo de origen hasta 
-los demás vértices en un determinado grafo.
-
-Floyd: Algoritmo utilizado para encontrar las distancias más cortas entre cada par de vértices 
-en un grafo dirigido ponderado por arista.
-
-Referencias:
-https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-using-priority_queue-stl/
-https://www.geeksforgeeks.org/floyd-warshall-algorithm-dp-16/
-https://www.youtube.com/watch?v=oNI0rf2P9gE
-*/
-
 #include <iostream>
 #include "Graph.h"
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
+vector<Node*> nodes, nodes2;
+
+
 vector<vector<int> > createMatrix(int n) {
     vector<vector<int> > matrix;
-    for (int r = 0; r < n; r++) {
+    for (int i = 0; i < n; i++) {
         vector<int> row;
-        for (int c = 0; c < n; c++) {
-            int a = 0;
-            cout << "Peso[" << r + 1 << "][" << c + 1 << "]: ";
-            cin >> a;
-            while(a < -1) {
-                cout << "Opción inválida. Solo valores enteros no negativos. (-1 es válido)" << endl;
-                cout << "Peso[" << r + 1 << "][" << c + 1 << "]: ";
-                cin >> a;
-            }
-            cout << endl;
-            row.push_back(a);
+        for (int j = 0; j < n; j++) {
+            Node *node = new Node(j);
+            int value;
+            cin >> value;
+            row.push_back(value);
+            node->x = i;
+            node->y = j;
+            nodes.push_back(node);
         }
-    matrix.push_back(row);
+        matrix.push_back(row);
     }
     return matrix;
 }
 
-vector<Node*> createNodes(int n) {
-    vector<Node*> nodes;
-    for(int i = 0; i < n; i++) {
-        Node *N = new Node(i + 1);
-        nodes.push_back(N);
-    }
-    return nodes;
+bool isSafe(int x, int y, int rows, int columns) { // checking the boundry
+    return (x >= 0 && x < rows && y >= 0 && y < columns);
 }
 
-vector<Edge*> createEdges(vector<vector<int> > weightMatrix, vector<Node*> nodes) {
-    vector<Edge*> edges;
-    for(int i = 0; i < weightMatrix.size(); i++) {
-        for(int j = 0; j < weightMatrix[0].size(); j++) {
-            if(weightMatrix[i][j] != -1 && weightMatrix[i][j] != 0) {
-                edges.push_back(new Edge(nodes[i], nodes[j], weightMatrix[i][j]));
-            }
+Node* findNode(int x, int y) {
+    for (int i = 0; i < nodes.size(); i++) {
+        if (nodes[i]->x == x && nodes[i]->y == y) {
+            return nodes[i];
         }
     }
-    return edges;
+    return NULL;
 }
+
+
+void checkNeighbours(Node *n, vector<vector<int> > matrix) {
+    int rows = matrix.size();
+    int columns = matrix[0].size();
+        // Considering only 4 directions up, down , right, left                    
+        int count = 0;
+        if (matrix[n->x][n->y] == 1) { // if the current node is not a wall
+            if(isSafe(n->x - 1, n->y, rows, columns)) { // left
+                if(matrix[n->x - 1][n->y] == 1) {
+                    count ++;
+                    n->neighbors.push_back(findNode(n->x - 1, n->y));
+                }
+            }
+
+            if(isSafe(n->x - 1, n->y - 1, rows, columns)) { // left-up
+                if(matrix[n->x - 1][n->y - 1] == 1) {
+                    count ++;
+                    n->neighbors.push_back(findNode(n->x - 1, n->y - 1));
+                }
+            }
+
+            if(isSafe(n->x, n->y - 1, rows, columns)) { // up
+                if(matrix[n->x][n->y - 1] == 1) {
+                    count ++;
+                    n->neighbors.push_back(findNode(n->x, n->y - 1));
+                }
+            }
+
+            if(isSafe(n->x + 1, n->y - 1, rows, columns)) { // right-up
+                if(matrix[n->x + 1][n->y - 1] == 1) {
+                    count ++;
+                    n->neighbors.push_back(findNode(n->x + 1, n->y - 1));
+                }
+            }
+
+            if(isSafe(n->x + 1, n->y, rows, columns)) { // right
+                if(matrix[n->x + 1][n->y] == 1) {
+                    count ++;
+                    n->neighbors.push_back(findNode(n->x + 1, n->y));
+                }
+            } 
+
+            if(isSafe(n->x + 1, n->y + 1, rows, columns)) { // right-down
+                if(matrix[n->x + 1][n->y + 1] == 1) {
+                    count ++;
+                    n->neighbors.push_back(findNode(n->x + 1, n->y + 1));
+                }
+            }
+
+            if(isSafe(n->x, n->y + 1, rows, columns)) { // down
+                if(matrix[n->x][n->y + 1] == 1) {
+                    count ++;
+                    n->neighbors.push_back(findNode(n->x, n->y + 1));
+                }
+            }
+
+            if(isSafe(n->x - 1, n->y + 1, rows, columns)) { // left-down
+                if(matrix[n->x - 1][n->y + 1] == 1) {
+                    count ++;
+                    n->neighbors.push_back(findNode(n->x - 1, n->y + 1));
+                }
+            }
+        }
+
+        cout << "Node " << n->number << " has " << count << " neighbors" << endl;
+    }       
 
 int main() {
+    cout << "Introduce matriz: ";
     int n;
-    string exec;
-    cout << "¿Ejecutar caso de prueba (0) o ingresar valores de forma manual? (1): ";
-    cin >> exec;
-
-    while(exec != "0" && exec != "1") {
-        cout << "Opción inválida. Intente de nuevo." << endl;
-        cout << "¿Ejecutar caso de prueba (0) o ingresar valores de forma manual? (1): ";
-        cin >> exec;
+    cin >> n;
+    vector<vector<int> > matrix = createMatrix(n);
+    cout << "\nMatriz: " << endl;
+    // Graph *G = new Graph(matrix);
+    // print matrix
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cout << matrix[i][j] << " ";
+        }
+        cout << endl;
     }
 
-    if(exec == "0") {
-        vector<vector<int> > weightMatrix;
-        vector<int> row;
-        row.push_back(0);
-        row.push_back(2);
-        row.push_back(-1);
-        row.push_back(3);
-        weightMatrix.push_back(row);
-        row.clear();
-
-        row.push_back(-1);
-        row.push_back(0);
-        row.push_back(1);
-        row.push_back(5);
-        weightMatrix.push_back(row);
-        row.clear();
-
-        row.push_back(2);
-        row.push_back(3);
-        row.push_back(0);
-        row.push_back(-1);
-        weightMatrix.push_back(row);
-        row.clear();
-        
-        row.push_back(3);
-        row.push_back(-1);
-        row.push_back(4);
-        row.push_back(0);
-        weightMatrix.push_back(row);
-        row.clear();
-
-
-        cout << "\nMatriz de entrada" << endl;
-        for(int i = 0; i < 4; i++) {
-            for(int j = 0; j < 4; j++) {
-                cout << weightMatrix[i][j] << "|";
-            }
-            cout << endl;
+    cout << "\nNodes: " << endl;
+    vector<Node*>::iterator ni;
+    for(ni = nodes.begin(); ni != nodes.end(); ni++) {
+        if (matrix[(*ni)->x][(*ni)->y] == 1) {
+            // cout << "Node " << (*ni)->number << " has coordinates (" << (*ni)->x << ", " << (*ni)->y << ")" << endl;
+            checkNeighbours(*ni, matrix);
+            nodes2.push_back(*ni);
         }
-
-        cout << "\nDijkstra" << endl;
-        for(int i = 0; i < 4; i++) {
-            vector<Node*> nodesDijkstra = createNodes(4);
-            vector<Edge*> edgesDijkstra = createEdges(weightMatrix, nodesDijkstra);
-            
-            Graph *gDijkstra = new Graph(nodesDijkstra, edgesDijkstra);
-            gDijkstra->runDijkstra(nodesDijkstra[i]);
-            gDijkstra->printDijkstra();
-            cout << endl;
-        }
-
-        cout << "\nFloyd" << endl;
-        vector<Node*> nodesFloyd = createNodes(4);
-        vector<Edge*> edgesFloyd = createEdges(weightMatrix, nodesFloyd);
-        Graph *gFloyd = new Graph(nodesFloyd, edgesFloyd);
-        gFloyd->runFloyd();
-
-    } else {
-        cout << "Introduce el número de nodos: ";
-        cin >> n;
-
-        cout << "Introduce los pesos del grafo." << endl;
-        vector<vector<int> > weightMatrix = createMatrix(n);
-
-        cout << "Matriz de entrada" << endl;
-        for(int i = 0; i < n; i++) {
-            for(int j = 0; j < n; j++) {
-                cout << weightMatrix[i][j] << "|";
-            }
-            cout << endl;
-        }
-
-        cout << "Dijkstra" << endl;
-        for(int i = 0; i < n; i++) {
-            vector<Node*> nodesDijkstra = createNodes(n);
-            vector<Edge*> edgesDijkstra = createEdges(weightMatrix, nodesDijkstra);
-            
-            Graph *gDijkstra = new Graph(nodesDijkstra, edgesDijkstra);
-            gDijkstra->runDijkstra(nodesDijkstra[i]);
-            gDijkstra->printDijkstra();
-            cout << endl;
-        }
-
-        cout << "Floyd" << endl;
-        vector<Node*> nodesFloyd = createNodes(n);
-        vector<Edge*> edgesFloyd = createEdges(weightMatrix, nodesFloyd);
-        Graph *gFloyd = new Graph(nodesFloyd, edgesFloyd);
-        gFloyd->runFloyd();
+    }
+    
+    // print nodes2
+    cout << "\nNodes2: " << endl;
+    vector<Node*>::iterator ni2;
+    for(ni2 = nodes2.begin(); ni2 != nodes2.end(); ni2++) {
+        cout << "Node " << (*ni2)->number << " has coordinates (" << (*ni2)->x << ", " << (*ni2)->y << ")" << endl;
+        // cout << "Node " << (*ni2)->number << " has " << (*ni2)->neighbors.size() << " neighbors" << endl;
     }
 
-
-    return 0;
+    Graph *g = new Graph(nodes2);
+    vector<Node*> AStar = g->runAStar(nodes2[0], nodes2[nodes2.size() - 1]);
+    cout << "\nAStar: " << endl;
+    for (int i = 0; i < AStar.size(); i++) {
+        cout << AStar[i]->number << ": (" << AStar[i]->x << ", " << AStar[i]->y << ")"<< endl;
+    }
 }
+
+/*
+4
+1 0 0 0
+1 1 0 1
+1 1 0 0
+0 1 1 1
+*/
