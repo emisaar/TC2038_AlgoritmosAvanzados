@@ -49,9 +49,9 @@ int main() {
     Graph *g = new Graph(nodes, matrix);
     vector<Node*> AStar = g->runAStar(nodes[0], nodes[nodes.size() - 1]);
     cout << "\nAStar: " << endl;
-    for (int i = 0; i < AStar.size(); i++) {
-        cout << AStar[i]->number << ": (" << AStar[i]->x << ", " << AStar[i]->y << ")"<< endl;
-    }
+    // for (int i = 0; i < AStar.size(); i++) {
+    //     cout << AStar[i]->number << ": (" << AStar[i]->x << ", " << AStar[i]->y << ") Direction: " << AStar[i]->direction << endl;
+    // }
 }
 
 /*

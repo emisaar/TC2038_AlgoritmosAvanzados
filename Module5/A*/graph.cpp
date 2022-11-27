@@ -20,7 +20,7 @@ Graph::Graph(vector<Node*> _nodes, vector<vector<int> > _matrix){
 vector<Node*> Graph::runAStar(Node *source, Node *goal) {
     vector<Node*> openList; // Holds potential best path nodes that have not yet been visited, starting with the source node
     vector<Node*> closedList; // Starts empty, holds nodes that have already been visited
-    openList = nodes;
+    openList.push_back(source); // Add source node to openList
 
     source->g = 0;
     source->f = source->g + heuristic(source, goal);
@@ -49,35 +49,44 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
         cout << endl;
 
         Node *current = getMinF(openList); // Get node with lowest f value
+        cout << "Previous: " << endl;
+        cout << current->parent << endl;
         if (current == goal) {
-            return constructPath(goal);
+            cout << "Previous: " << endl;
+            cout << current->parent << endl;
+            return constructPath(current);
         }
         remove(openList, current); // Remove current from openList
         closedList.push_back(current); // Add current to closedList
         getNodeNeighbors(current); // Get neighbors of current
-        vector<Node*> neighbors = current->neighbors; // Get neighbors of current
+        vector<Node*> currNeighbors = current->neighbors; // Get neighbors of current
 
         cout << "Neighbors: ";
         cout << "Neighs from Node " << current->number << ": (" <<  current->x << ", " << current->y << ") " << endl;
-        for(oi = neighbors.begin(); oi != neighbors.end(); ++oi) {
+        for(oi = currNeighbors.begin(); oi != currNeighbors.end(); ++oi) {
             cout << "Neigh " << (*oi)->number << ": (" <<  (*oi)->x << ", " << (*oi)->y << ") | Direction: " << (*oi)->direction << " isDiagonal? " << (*oi)->isDiagonal << endl;
         }
 
         vector<Node*>::iterator ni;
-        for(ni = neighbors.begin(); ni != neighbors.end(); ++ni) { // For each neighbor in neighbors    
+        for(ni = currNeighbors.begin(); ni != currNeighbors.end(); ++ni) { // For each neighbor of current    
             Node *neighbor = *ni;
             if (find(closedList.begin(), closedList.end(), neighbor) == closedList.end()) { // if neighbor is not in closedList
                 neighbor->f = neighbor->g + heuristic(neighbor, goal); 
                 if (find(openList.begin(), openList.end(), neighbor) == openList.end()) { // if neighbor is not in openList
+                    neighbor->parent = current; // Set current as neighbor's parent
                     openList.push_back(neighbor); // Add neighbor to openList
                 } else {
                     Node* openNeighbor = *find(openList.begin(), openList.end(), neighbor); // Get neighbor from openList
                     if (neighbor->g < openNeighbor->g) {
+                        openNeighbor->parent = current; // Set neighbor's parent to current    
+                        cout << "PARENT: ";
+                        cout << openNeighbor->parent->x << openNeighbor->parent->y << endl;
                         openNeighbor->g = neighbor->g;
-                        openNeighbor->parent = neighbor->parent;
                         openNeighbor->direction = neighbor->direction;
                         openNeighbor->isDiagonal = neighbor->isDiagonal;
                     }
+                    // cout << "PARENT2: ";
+                    // openNeighbor->parent = current; // Set neighbor's parent to current    
                 }
             }
         }
@@ -118,7 +127,7 @@ void Graph::getNodeNeighbors(Node *n) {
                 Node *node = findNode(n->x - 1, n->y);
                 node->direction = "U";
 
-                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                dCost = sqrt(pow(n->x - node->x, 2) + pow(n->y - node->y, 2));
                 node->g = n->g + dCost;
                 
                 n->neighbors.push_back(node);
@@ -133,7 +142,7 @@ void Graph::getNodeNeighbors(Node *n) {
                 node->direction = "LU";
                 node->isDiagonal = true;
 
-                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                dCost = sqrt(pow(n->x - node->x, 2) + pow(n->y - node->y, 2));
                 node->g = n->g + dCost;
 
                 n->neighbors.push_back(node);
@@ -149,7 +158,7 @@ void Graph::getNodeNeighbors(Node *n) {
                 node->direction = "L";
                 // node->isDiagonal = false;
 
-                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                dCost = sqrt(pow(n->x - node->x, 2) + pow(n->y - node->y, 2));
                 node->g = n->g + dCost;
 
                 n->neighbors.push_back(node);
@@ -164,7 +173,7 @@ void Graph::getNodeNeighbors(Node *n) {
                 node->direction = "LD";
                 node->isDiagonal = true;
 
-                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                dCost = sqrt(pow(n->x - node->x, 2) + pow(n->y - node->y, 2));
                 node->g = n->g + dCost;
 
                 n->neighbors.push_back(node);
@@ -179,7 +188,7 @@ void Graph::getNodeNeighbors(Node *n) {
                 Node *node = findNode(n->x + 1, n->y);
                 node->direction = "D";
 
-                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                dCost = sqrt(pow(n->x - node->x, 2) + pow(n->y - node->y, 2));
                 node->g = n->g + dCost;
 
                 n->neighbors.push_back(node);
@@ -194,7 +203,7 @@ void Graph::getNodeNeighbors(Node *n) {
                 node->direction = "RD";
                 node->isDiagonal = true;
 
-                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                dCost = sqrt(pow(n->x - node->x, 2) + pow(n->y - node->y, 2));
                 node->g = n->g + dCost;
 
                 n->neighbors.push_back(node);
@@ -209,7 +218,7 @@ void Graph::getNodeNeighbors(Node *n) {
                 Node *node = findNode(n->x, n->y + 1);
                 node->direction = "R";
 
-                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                dCost = sqrt(pow(n->x - node->x, 2) + pow(n->y - node->y, 2));
                 node->g = n->g + dCost;
 
                 n->neighbors.push_back(node);
@@ -239,15 +248,35 @@ void Graph::getNodeNeighbors(Node *n) {
     }
 }
 
-vector <Node*> Graph::constructPath(Node *node) {
-    vector<Node*> path;
+void Graph::constructStringPath(vector<Node*> path) {
+    vector<string> stringPath;
+    for (int i = 0; i < path.size(); i++) {
+        stringPath.push_back(path[i]->direction);
+    }
+    
+    for (int i = 0; i < stringPath.size(); i++) {
+        cout << stringPath[i] << " ";
+    }
+}
+
+vector<Node*> Graph::constructPath(Node *node) {
+    vector<Node*> path, reversedPath;
     path.push_back(node);
     while (node->parent != nullptr) {
         node = node->parent;
         path.push_back(node);
     }
+    constructStringPath(path);
+    // vector<Node*>::iterator it;
+    // reverse(path.begin(), path.end());
+    // for (it = path.begin(); it != path.end(); it++) {
+    //     reversedPath.push_back(*it);
+    // }
+
     return path;
 }
+
+
 
 Node * Graph::getMinF(vector<Node*> qs) {
     // Iterador de nodos

@@ -9,6 +9,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -28,6 +29,9 @@ class Graph {
         float heuristic(Node *u, Node *v);
         Node *getMinF(vector<Node*> qs);
         vector<Node*> constructPath(Node *goal);
+
+        void constructStringPath(vector<Node*> path);
+
         void remove(vector<Node*> &qs, Node *q);
 
         Node *findNode(int x, int y);
