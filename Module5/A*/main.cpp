@@ -46,6 +46,7 @@ int main() {
     // }
 
     cout << "====== AStar ======" << endl;
+    cout << endl;
     Graph *g = new Graph(nodes, matrix);
     vector<Node*> AStar = g->runAStar(nodes[0], nodes[nodes.size() - 1]);
     cout << endl;
@@ -61,4 +62,18 @@ int main() {
 1 1 0 1
 1 1 0 0
 0 1 1 1
+*/
+
+/*
+10
+1 1 1 1 1 0 0 0 0 0
+0 0 1 0 1 0 0 0 0 0
+0 0 1 0 1 0 0 0 0 0
+0 0 0 0 1 0 0 0 0 0
+0 0 0 0 1 0 0 0 0 0
+0 0 0 0 1 1 1 1 0 0
+0 0 0 0 1 0 0 1 0 0
+0 0 0 0 1 1 1 1 1 0
+0 0 0 0 1 0 0 0 1 0
+0 0 0 0 0 0 0 0 1 1
 */
