@@ -13,7 +13,10 @@ class Node
 public:
     int x, y;
     // Node *prev;
-	Node* parent;
+	Node *parent;
+
+	string direction;
+	bool isDiagonal; 
 
 	int number; // optional row, col
 	float f; 	// g + h

@@ -11,35 +11,10 @@ Recibe como parámetro:
     - Vector de nodos (_nodes)
     - Vector de artistas (_edges)
 */
-Graph::Graph(vector<Node*> _nodes, vector<Edge*> _edges){
-    nodes = _nodes;
-    edges = _edges;
-}
 
-Graph::Graph(vector<Node*> _nodes){
+Graph::Graph(vector<Node*> _nodes, vector<vector<int> > _matrix){
     nodes = _nodes;
-}
-
-/*
-Método getNeighbors -> Complejidad: O(n)
-Recibe:
-    - Un nodo (n) al que se le desea encontrar sus vecinos.
-Regresa un vector (neighbors) con los nodos vecinos al nodo 
-que recibe como parámetro.
-Itera sobre el vector edges para conocer los vecinos.
-*/
-vector<Node*> Graph::getNeighbors(Node *n){
-    vector<Node*> neighbors;
-    vector<Edge*>::iterator ei;
-    for(ei = edges.begin(); ei != edges.end(); ++ei) {
-        if((*ei)->first == n) {
-            neighbors.push_back((*ei)->second);
-        } 
-        // else if ((*ei)->second == n) {
-        //     neighbors.push_back((*ei)->first);
-        // }
-    }
-    return neighbors;
+    matrix = _matrix;
 }
 
 vector<Node*> Graph::runAStar(Node *source, Node *goal) {
@@ -57,16 +32,19 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
     */
    int i = 0;
     while (!openList.empty()) {
+        cout << endl;
         cout << "Open List (" << i << "): ";
         vector<Node*>::iterator oi;
         for(oi = openList.begin(); oi != openList.end(); ++oi) {
-            cout << (*oi)->number << " ";
+            cout << "Node " << (*oi)->number << ": (" << (*oi)->x << ", " << (*oi)->y << ") ";
+            // cout << (*oi)->direction << ", ";
         }
         cout << endl;
 
         cout << "Closed List: ";
         for(oi = closedList.begin(); oi != closedList.end(); ++oi) {
-            cout << (*oi)->number << " ";
+            // cout << (*oi)->direction << ", ";
+            cout << "Node " << (*oi)->number << ": (" << (*oi)->x << ", " << (*oi)->y << ") ";
         }
         cout << endl;
 
@@ -76,12 +54,15 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
         }
         remove(openList, current); // Remove current from openList
         closedList.push_back(current); // Add current to closedList
-        vector<Node*> neighbors = Graph::neighbors(current); // Get neighbors of current
+        getNodeNeighbors(current); // Get neighbors of current
+        vector<Node*> neighbors = current->neighbors; // Get neighbors of current
+
         cout << "Neighbors: ";
-        cout << "Node " << current->number << ": (" <<  current->x << ", " << current->y << ") " << endl;
+        cout << "Neighs from Node " << current->number << ": (" <<  current->x << ", " << current->y << ") " << endl;
         for(oi = neighbors.begin(); oi != neighbors.end(); ++oi) {
-            cout << "Node " << (*oi)->number << ": (" <<  (*oi)->x << ", " << (*oi)->y << ") " << (*oi)->parent->number <<  ": (" <<  (*oi)->x << ", " << (*oi)->y << ") " << endl;
+            cout << "Neigh " << (*oi)->number << ": (" <<  (*oi)->x << ", " << (*oi)->y << ") | Direction: " << (*oi)->direction << " isDiagonal? " << (*oi)->isDiagonal << endl;
         }
+
         vector<Node*>::iterator ni;
         for(ni = neighbors.begin(); ni != neighbors.end(); ++ni) { // For each neighbor in neighbors    
             Node *neighbor = *ni;
@@ -94,6 +75,8 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
                     if (neighbor->g < openNeighbor->g) {
                         openNeighbor->g = neighbor->g;
                         openNeighbor->parent = neighbor->parent;
+                        openNeighbor->direction = neighbor->direction;
+                        openNeighbor->isDiagonal = neighbor->isDiagonal;
                     }
                 }
             }
@@ -108,15 +91,152 @@ float Graph::heuristic(Node *a, Node *b) {
     return sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2));
 }
 
-vector<Node*> Graph::neighbors(Node *n) {
-    vector<Node*> neighbors = n->neighbors;
-    vector<Node*>::iterator ni;
-    for(ni = neighbors.begin(); ni != neighbors.end(); ++ni) {
-        Node *neighbor = *ni;
-        neighbor->g = n->g + 1;
-        neighbor->parent = n;
+Node* Graph::findNode(int x, int y) {
+    for (int i = 0; i < nodes.size(); i++) {
+        if (nodes[i]->x == x && nodes[i]->y == y) {
+            cout << "Node found: " << nodes[i]->number << ": (" <<  nodes[i]->x << ", " << nodes[i]->y << ")" << endl;
+            return nodes[i];
+        }
     }
-    return neighbors;
+    return NULL;
+}
+
+bool Graph::isSafe(int x, int y, int rows, int columns) { // checking the boundry
+    return (x >= 0 && x < rows && y >= 0 && y < columns);
+}
+
+void Graph::getNodeNeighbors(Node *n) {
+    int rows = matrix.size();
+    int columns = matrix[0].size();
+    float dCost;
+    // Considering only 4 directions up, down , right, left                    
+    int count = 0;
+    if (matrix[n->x][n->y] == 1) { // if the current node is not a wall
+        if(isSafe(n->x - 1, n->y, rows, columns)) { // up
+            if(matrix[n->x - 1][n->y] == 1) {
+                count ++;
+                Node *node = findNode(n->x - 1, n->y);
+                node->direction = "U";
+
+                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                node->g = n->g + dCost;
+                
+                n->neighbors.push_back(node);
+                // n->neighbors[n->neighbors.size() - 1]->direction = "L";
+            }
+        }
+
+        if(isSafe(n->x - 1, n->y - 1, rows, columns)) { // left-up
+            if(matrix[n->x - 1][n->y - 1] == 1) {
+                count ++;
+                Node *node = findNode(n->x - 1, n->y - 1);
+                node->direction = "LU";
+                node->isDiagonal = true;
+
+                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                node->g = n->g + dCost;
+
+                n->neighbors.push_back(node);
+                // n->neighbors[n->neighbors.size() - 1]->isDiagonal = true;
+                // n->neighbors[n->neighbors.size() - 1]->direction = "LU";
+            }
+        }
+
+        if(isSafe(n->x, n->y - 1, rows, columns)) { // left
+            if(matrix[n->x][n->y - 1] == 1) {
+                count ++;
+                Node *node = findNode(n->x, n->y - 1);
+                node->direction = "L";
+                // node->isDiagonal = false;
+
+                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                node->g = n->g + dCost;
+
+                n->neighbors.push_back(node);
+                // n->neighbors[n->neighbors.size() - 1]->direction = "U";
+            }
+        }
+
+        if(isSafe(n->x + 1, n->y - 1, rows, columns)) { // left-down
+            if(matrix[n->x + 1][n->y - 1] == 1) {
+                count ++;
+                Node* node = findNode(n->x + 1, n->y - 1);
+                node->direction = "LD";
+                node->isDiagonal = true;
+
+                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                node->g = n->g + dCost;
+
+                n->neighbors.push_back(node);
+                // n->neighbors[n->neighbors.size() - 1]->isDiagonal = true;
+                // n->neighbors[n->neighbors.size() - 1]->direction = "RU";
+            }
+        }
+
+        if(isSafe(n->x + 1, n->y, rows, columns)) { // down
+            if(matrix[n->x + 1][n->y] == 1) {
+                count ++;
+                Node *node = findNode(n->x + 1, n->y);
+                node->direction = "D";
+
+                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                node->g = n->g + dCost;
+
+                n->neighbors.push_back(node);
+                // n->neighbors[n->neighbors.size() - 1]->direction = "R";
+            }
+        } 
+
+        if(isSafe(n->x + 1, n->y + 1, rows, columns)) { // right-down
+            if(matrix[n->x + 1][n->y + 1] == 1) {
+                count ++;
+                Node *node = findNode(n->x + 1, n->y + 1);
+                node->direction = "RD";
+                node->isDiagonal = true;
+
+                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                node->g = n->g + dCost;
+
+                n->neighbors.push_back(node);
+                // n->neighbors[n->neighbors.size() - 1]->isDiagonal = true;
+                // n->neighbors[n->neighbors.size() - 1]->direction = "RD";
+            }
+        }
+
+        if(isSafe(n->x, n->y + 1, rows, columns)) { // right
+            if(matrix[n->x][n->y + 1] == 1) {
+                count ++;
+                Node *node = findNode(n->x, n->y + 1);
+                node->direction = "R";
+
+                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                node->g = n->g + dCost;
+
+                n->neighbors.push_back(node);
+                // n->neighbors[n->neighbors.size() - 1]->direction = "D";
+            }
+        }
+
+        if(isSafe(n->x - 1, n->y + 1, rows, columns)) { // left-down
+            if(matrix[n->x - 1][n->y + 1] == 1) {
+                count ++;
+                Node *node = findNode(n->x - 1, n->y + 1);
+                node->direction = "LD";
+                node->isDiagonal = true;
+                
+                dCost = sqrt(pow(node->x - n->x, 2) + pow(node->y - n->y, 2));
+                node->g = n->g + dCost;
+
+                n->neighbors.push_back(node);
+            }
+        }
+    }
+
+    cout << "Node " << n->number << " has " << count << " neighbors" << endl;
+    cout << "Neighbors of " << n->number << ": (" <<  n->x << ", " << n->y << ") are: \n";
+    for (int i = 0; i < n->neighbors.size(); i++) {
+        cout << n->neighbors[i]->number << ": (" <<  n->neighbors[i]->x << ", " << n->neighbors[i]->y << ") Direction: " << n->neighbors[i]->direction << " IsDiagonal " << n->neighbors[i]->isDiagonal << endl;
+    }
 }
 
 vector <Node*> Graph::constructPath(Node *node) {
@@ -136,14 +256,14 @@ Node * Graph::getMinF(vector<Node*> qs) {
     Node *minF = qs[0];
     // Itera sobre los nodos del vector
     for (ni = qs.begin(); ni != qs.end(); ++ni) {
-        cout << "(*ni): " << (*ni)->f << " || minF: " << minF->f << endl;
+        // cout << "(*ni): " << (*ni)->f << " || minF: " << minF->f << endl;
         // Si la distancia del Nodo actual es menor a la del Nodo con menor distancia
         if ((*ni)->f < minF->f) {
             // Actualiza Nodo con menor distancia
             minF = *ni;
         }
     }
-    cout << "MinF: " << minF->number << endl;
+    // cout << "MinF: " << minF->number << endl;
     // Regresa Nodo con menor distancia
     return minF;
 }
@@ -171,30 +291,4 @@ void Graph::remove(vector<Node*> &qs, Node *q) {
             break;
         }
     }
-}
-
-/* 
-getLenth(Node *u, Node *v) -> Complejidad: O(n)
-Recibe dos nodos:
-    - Nodo u: Nodo de origen
-    - Node v; Node de destino
-Regresa un int que corresponde al peso (weight) de la arista.
-Se itera el vector de aristas (edges) para encontrar su
-respectivo peso (weight).
-*/
-int Graph::getLength(Node *u, Node *v) {
-    vector<Edge*>::iterator ei;
-
-    // Recorrer el vector de aristas (edges)
-    for (ei = edges.begin(); ei != edges.end(); ++ei) {
-        // Si el nodo first es igual al nodo u y el nodo second es igual al nodo v, regresa el peso de esa arista
-        if ((*ei)->first == u && (*ei)->second == v) {
-            return (*ei)->weight;
-        } 
-        // else if ((*ei)->first == v && (*ei)->second == u) {
-        //     return (*ei)->weight;
-        // }
-    }
-
-    return 0;
 }

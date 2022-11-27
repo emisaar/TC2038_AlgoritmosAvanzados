@@ -16,24 +16,22 @@ class Graph {
     public:
         vector<Node*> nodes;
         vector<Edge*> edges;
+
+        vector<vector<int> > matrix;
+
         Node *s;
         Node *goal;
 
-        Graph(vector<Node*> _nodes, vector<Edge*> _edges);
-
-        vector <Node*> getNeighbors(Node *n);
-        void printDijkstra();
-        void printFloyd(vector<vector<int> > matrix);
-        void runDijkstra(Node *source);
-        void runFloyd();
+        Graph(vector<Node*> _nodes, vector<vector<int> > _matrix); 
+        
+        vector<Node*> runAStar(Node *source, Node *goal);
+        float heuristic(Node *u, Node *v);
         Node *getMinF(vector<Node*> qs);
         vector<Node*> constructPath(Node *goal);
         void remove(vector<Node*> &qs, Node *q);
-        int getLength(Node *u, Node *v);
 
-        vector<Node*> runAStar(Node *source, Node *goal);
-        float heuristic(Node *u, Node *v);
-        vector<Node*> neighbors(Node *n);
+        Node *findNode(int x, int y);
+        bool isSafe(int x, int y, int rows, int columns);
+        void getNodeNeighbors(Node *n);
 
-        Graph(vector<Node*> _nodes); 
 };
