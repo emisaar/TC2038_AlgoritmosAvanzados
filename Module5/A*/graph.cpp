@@ -32,28 +32,28 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
     */
    int i = 0;
     while (!openList.empty()) {
-        cout << endl;
-        cout << "Open List (" << i << "): ";
-        vector<Node*>::iterator oi;
-        for(oi = openList.begin(); oi != openList.end(); ++oi) {
-            cout << "Node " << (*oi)->number << ": (" << (*oi)->x << ", " << (*oi)->y << ") ";
-            // cout << (*oi)->direction << ", ";
-        }
-        cout << endl;
+        // cout << endl;
+        // cout << "Open List (" << i << "): ";
+        // vector<Node*>::iterator oi;
+        // for(oi = openList.begin(); oi != openList.end(); ++oi) {
+        //     cout << "Node " << (*oi)->number << ": (" << (*oi)->x << ", " << (*oi)->y << ") ";
+        //     // cout << (*oi)->direction << ", ";
+        // }
+        // cout << endl;
 
-        cout << "Closed List: ";
-        for(oi = closedList.begin(); oi != closedList.end(); ++oi) {
-            // cout << (*oi)->direction << ", ";
-            cout << "Node " << (*oi)->number << ": (" << (*oi)->x << ", " << (*oi)->y << ") ";
-        }
-        cout << endl;
+        // cout << "Closed List: ";
+        // for(oi = closedList.begin(); oi != closedList.end(); ++oi) {
+        //     // cout << (*oi)->direction << ", ";
+        //     cout << "Node " << (*oi)->number << ": (" << (*oi)->x << ", " << (*oi)->y << ") ";
+        // }
+        // cout << endl;
 
         Node *current = getMinF(openList); // Get node with lowest f value
-        cout << "Previous: " << endl;
-        cout << current->parent << endl;
+        // cout << "Previous: " << endl;
+        // cout << current->parent << endl;
         if (current == goal) {
-            cout << "Previous: " << endl;
-            cout << current->parent << endl;
+            // cout << "Previous: " << endl;
+            // cout << current->parent << endl;
             return constructPath(current);
         }
         remove(openList, current); // Remove current from openList
@@ -61,11 +61,11 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
         getNodeNeighbors(current); // Get neighbors of current
         vector<Node*> currNeighbors = current->neighbors; // Get neighbors of current
 
-        cout << "Neighbors: ";
-        cout << "Neighs from Node " << current->number << ": (" <<  current->x << ", " << current->y << ") " << endl;
-        for(oi = currNeighbors.begin(); oi != currNeighbors.end(); ++oi) {
-            cout << "Neigh " << (*oi)->number << ": (" <<  (*oi)->x << ", " << (*oi)->y << ") | Direction: " << (*oi)->direction << " isDiagonal? " << (*oi)->isDiagonal << endl;
-        }
+        // cout << "Neighbors: ";
+        // cout << "Neighs from Node " << current->number << ": (" <<  current->x << ", " << current->y << ") " << endl;
+        // for(oi = currNeighbors.begin(); oi != currNeighbors.end(); ++oi) {
+        //     cout << "Neigh " << (*oi)->number << ": (" <<  (*oi)->x << ", " << (*oi)->y << ") | Direction: " << (*oi)->direction << " isDiagonal? " << (*oi)->isDiagonal << endl;
+        // }
 
         vector<Node*>::iterator ni;
         for(ni = currNeighbors.begin(); ni != currNeighbors.end(); ++ni) { // For each neighbor of current    
@@ -79,8 +79,8 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
                     Node* openNeighbor = *find(openList.begin(), openList.end(), neighbor); // Get neighbor from openList
                     if (neighbor->g < openNeighbor->g) {
                         openNeighbor->parent = current; // Set neighbor's parent to current    
-                        cout << "PARENT: ";
-                        cout << openNeighbor->parent->x << openNeighbor->parent->y << endl;
+                        // cout << "PARENT: ";
+                        // cout << openNeighbor->parent->x << openNeighbor->parent->y << endl;
                         openNeighbor->g = neighbor->g;
                         openNeighbor->direction = neighbor->direction;
                         openNeighbor->isDiagonal = neighbor->isDiagonal;
@@ -96,14 +96,14 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
 }
 
 float Graph::heuristic(Node *a, Node *b) {
-    cout << "Heuristic: " << sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2)) << endl;
+    // cout << "Heuristic: " << sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2)) << endl;
     return sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2));
 }
 
 Node* Graph::findNode(int x, int y) {
     for (int i = 0; i < nodes.size(); i++) {
         if (nodes[i]->x == x && nodes[i]->y == y) {
-            cout << "Node found: " << nodes[i]->number << ": (" <<  nodes[i]->x << ", " << nodes[i]->y << ")" << endl;
+            // cout << "Node found: " << nodes[i]->number << ": (" <<  nodes[i]->x << ", " << nodes[i]->y << ")" << endl;
             return nodes[i];
         }
     }
@@ -241,39 +241,77 @@ void Graph::getNodeNeighbors(Node *n) {
         }
     }
 
-    cout << "Node " << n->number << " has " << count << " neighbors" << endl;
-    cout << "Neighbors of " << n->number << ": (" <<  n->x << ", " << n->y << ") are: \n";
-    for (int i = 0; i < n->neighbors.size(); i++) {
-        cout << n->neighbors[i]->number << ": (" <<  n->neighbors[i]->x << ", " << n->neighbors[i]->y << ") Direction: " << n->neighbors[i]->direction << " IsDiagonal " << n->neighbors[i]->isDiagonal << endl;
-    }
+    // cout << "Node " << n->number << " has " << count << " neighbors" << endl;
+    // cout << "Neighbors of " << n->number << ": (" <<  n->x << ", " << n->y << ") are: \n";
+    // for (int i = 0; i < n->neighbors.size(); i++) {
+    //     cout << n->neighbors[i]->number << ": (" <<  n->neighbors[i]->x << ", " << n->neighbors[i]->y << ") Direction: " << n->neighbors[i]->direction << " IsDiagonal " << n->neighbors[i]->isDiagonal << endl;
+    // }
 }
 
-void Graph::constructStringPath(vector<Node*> path) {
+void Graph::constructStringPath(vector<Node*> &path) {
     vector<string> stringPath;
-    for (int i = 0; i < path.size(); i++) {
-        stringPath.push_back(path[i]->direction);
+    Node *currPos, *nextPos;
+    currPos->x = path[path.size() - 1]->x;
+    currPos->y = path[path.size() - 1]->y;
+    path.pop_back();
+   
+    while(!path.empty()) {
+        nextPos->x = path[path.size() - 1]->x;
+        nextPos->y = path[path.size() - 1]->y;
+        path.pop_back();
+
+        if(currPos->x == nextPos->x && currPos->y == nextPos->y + 1) {
+            stringPath.push_back("L");
+        } else if(currPos->x == nextPos->x && currPos->y == nextPos->y - 1) {
+            stringPath.push_back("R");
+        } else if(currPos->x == nextPos->x + 1 && currPos->y == nextPos->y) {
+            stringPath.push_back("U");
+        } else if(currPos->x == nextPos->x - 1 && currPos->y == nextPos->y) {
+            stringPath.push_back("D");
+        } else if(currPos->x == nextPos->x + 1 && currPos->y == nextPos->y + 1) {
+            stringPath.push_back("UL");
+        } else if(currPos->x == nextPos->x + 1 && currPos->y == nextPos->y - 1) {
+            stringPath.push_back("UR");
+        } else if(currPos->x == nextPos->x - 1 && currPos->y == nextPos->y + 1) {
+            stringPath.push_back("DL");
+        } else if(currPos->x == nextPos->x - 1 && currPos->y == nextPos->y - 1) {
+            stringPath.push_back("DR");
+        }
+
+        currPos->x = nextPos->x;
+        currPos->y = nextPos->y;
     }
     
+    cout << "String Path: ";
     for (int i = 0; i < stringPath.size(); i++) {
-        cout << stringPath[i] << " ";
+        if (i == stringPath.size() - 1) {
+            cout << stringPath[i];
+        } else {
+            cout << stringPath[i] << ", ";
+        }
     }
 }
 
 vector<Node*> Graph::constructPath(Node *node) {
-    vector<Node*> path, reversedPath;
+    vector<Node*> path, pathCopy;
     path.push_back(node);
+    pathCopy.push_back(node);
     while (node->parent != nullptr) {
         node = node->parent;
         path.push_back(node);
+        pathCopy.push_back(node);
     }
+
     constructStringPath(path);
+
+    reverse(pathCopy.begin(), pathCopy.end());
     // vector<Node*>::iterator it;
     // reverse(path.begin(), path.end());
     // for (it = path.begin(); it != path.end(); it++) {
     //     reversedPath.push_back(*it);
     // }
 
-    return path;
+    return pathCopy;
 }
 
 

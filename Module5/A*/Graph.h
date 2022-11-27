@@ -30,7 +30,7 @@ class Graph {
         Node *getMinF(vector<Node*> qs);
         vector<Node*> constructPath(Node *goal);
 
-        void constructStringPath(vector<Node*> path);
+        void constructStringPath(vector<Node*> &path);
 
         void remove(vector<Node*> &qs, Node *q);
 
