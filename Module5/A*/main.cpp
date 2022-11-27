@@ -19,9 +19,9 @@ vector<vector<int> > createMatrix(int n) {
         vector<int> row;
         for (int j = 0; j < n; j++) {
             Node *node = new Node(j);
-            int value;
+            string value;
             cin >> value;
-            row.push_back(value);
+            row.push_back(stoi(value));
             node->x = i;
             node->y = j;
             nodes.push_back(node);
@@ -63,6 +63,14 @@ int main() {
 1 1 0 0
 0 1 1 1
 */
+
+/*
+
+4
+1, 0, 0, 0
+1, 1, 0, 1
+1, 1, 0, 0
+0, 1, 1, 1*/
 
 /*
 10
