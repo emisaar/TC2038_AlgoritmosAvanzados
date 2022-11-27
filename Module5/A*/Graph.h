@@ -1,7 +1,9 @@
-//  Actividad 3.2 - Implementación de "Dijkstra" y "Floyd"
-//  Emiliano Saucedo Arriola  |  A01659258
-//  Fecha: 06/10/2022
-//  Graph.h
+//  Actividad 5.5 Implementación A*
+//
+//  Alejandro Díaz Villagómez | A01276769
+//  Emiliano Saucedo Arriola  | A01659258
+//
+//  Fecha: 28/11/2022
 
 #pragma once
 #include "Node.h"

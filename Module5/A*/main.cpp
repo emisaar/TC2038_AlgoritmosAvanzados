@@ -1,7 +1,9 @@
-//  Actividad 3.2 - Implementación de "Dijkstra" y "Floyd"
-//  Emiliano Saucedo Arriola  |  A01659258
-//  Fecha: 06/10/2022
-//  main.cpp
+//  Actividad 5.5 Implementación A*
+//
+//  Alejandro Díaz Villagómez | A01276769
+//  Emiliano Saucedo Arriola  | A01659258
+//
+//  Fecha: 28/11/2022
 
 #include <iostream>
 #include "Graph.h"
@@ -45,15 +47,16 @@ int main() {
     //     cout << endl;
     // }
 
-    cout << "====== AStar ======" << endl;
     cout << endl;
+    cout << "====== AStar ======" << endl;
     Graph *g = new Graph(nodes, matrix);
     vector<Node*> AStar = g->runAStar(nodes[0], nodes[nodes.size() - 1]);
     cout << endl;
-    cout << "Path coords:";
+    cout << "\tPath coords:";
     for (int i = 0; i < AStar.size(); i++) {
         cout << "(" << AStar[i]->x << ", " << AStar[i]->y << ") ";
     }
+    cout << endl;
 }
 
 /*

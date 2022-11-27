@@ -1,22 +1,22 @@
-//  Actividad 3.2 - Implementación de "Dijkstra" y "Floyd"
-//  Emiliano Saucedo Arriola  |  A01659258
-//  Fecha: 06/10/2022
-//  graph.cpp
+//  Actividad 5.5 Implementación A*
+//
+//  Alejandro Díaz Villagómez | A01276769
+//  Emiliano Saucedo Arriola  | A01659258
+//
+//  Fecha: 28/11/2022
 
 #include "Graph.h"
 #include "math.h"
-/*
-Constructor de Graph (Grafo)
-Recibe como parámetro:
-    - Vector de nodos (_nodes)
-    - Vector de artistas (_edges)
-*/
 
+// Constructor
+// Complejidad: O(n^2)
 Graph::Graph(vector<Node*> _nodes, vector<vector<int> > _matrix){
     nodes = _nodes;
     matrix = _matrix;
 }
 
+// RunAStar Method
+// Complejidad: O(n^2)
 vector<Node*> Graph::runAStar(Node *source, Node *goal) {
     vector<Node*> openList; // Holds potential best path nodes that have not yet been visited, starting with the source node
     vector<Node*> closedList; // Starts empty, holds nodes that have already been visited
@@ -95,11 +95,15 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
     return vector<Node*>(); // If openList is empty, there's no path
 }
 
+// Heuristic
+// Complejidad: O(1)
 float Graph::heuristic(Node *a, Node *b) {
     // cout << "Heuristic: " << sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2)) << endl;
     return sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2));
 }
 
+// Find Node
+// Complejidad: O(n)
 Node* Graph::findNode(int x, int y) {
     for (int i = 0; i < nodes.size(); i++) {
         if (nodes[i]->x == x && nodes[i]->y == y) {
@@ -110,15 +114,19 @@ Node* Graph::findNode(int x, int y) {
     return NULL;
 }
 
+// IsSafe
+// Complejidad: O(1)
 bool Graph::isSafe(int x, int y, int rows, int columns) { // checking the boundry
     return (x >= 0 && x < rows && y >= 0 && y < columns);
 }
 
+// GetNodeNeighbors method
+// Considers 8-way movement
+// Complejidad: O(n)
 void Graph::getNodeNeighbors(Node *n) {
     int rows = matrix.size();
     int columns = matrix[0].size();
-    float dCost;
-    // Considering only 4 directions up, down , right, left                    
+    float dCost;                   
     int count = 0;
     if (matrix[n->x][n->y] == 1) { // if the current node is not a wall
         if(isSafe(n->x - 1, n->y, rows, columns)) { // up
@@ -248,6 +256,8 @@ void Graph::getNodeNeighbors(Node *n) {
     // }
 }
 
+// Construct Path
+// Complejidad: O(n)
 void Graph::constructStringPath(vector<Node*> &path) {
     vector<string> stringPath;
     Node *currPos, *nextPos;
@@ -282,7 +292,7 @@ void Graph::constructStringPath(vector<Node*> &path) {
         currPos->y = nextPos->y;
     }
     
-    cout << "String Path: ";
+    cout << "\tString Path: ";
     for (int i = 0; i < stringPath.size(); i++) {
         if (i == stringPath.size() - 1) {
             cout << stringPath[i];
@@ -292,6 +302,8 @@ void Graph::constructStringPath(vector<Node*> &path) {
     }
 }
 
+// Construct Path
+// Complejidad: O(n)
 vector<Node*> Graph::constructPath(Node *node) {
     vector<Node*> path, pathCopy;
     path.push_back(node);
@@ -314,8 +326,8 @@ vector<Node*> Graph::constructPath(Node *node) {
     return pathCopy;
 }
 
-
-
+// GetMinF
+// Complejidad: O(n)
 Node * Graph::getMinF(vector<Node*> qs) {
     // Iterador de nodos
     vector<Node*>::iterator ni;
@@ -338,15 +350,8 @@ Node * Graph::getMinF(vector<Node*> qs) {
 
 
 
-/*
-remove(vector<Node*> &qs, Node *q) -> Complejidad: O(n)
-Recibe:
-    - Un vector de nodos (qs)
-    - Un nodo (q) que es el que se desea eliminar.
-El método itera el vector de nodos para buscar el nodo a
-eliminar. En caso de encontrarlo, se realiza un erase en la
-posición que se encuentra.
-*/
+// Remove
+// Complejidad: O(n)
 void Graph::remove(vector<Node*> &qs, Node *q) {
     vector<Node*>::iterator ni;
     
