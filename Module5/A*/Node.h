@@ -15,9 +15,6 @@ public:
     // Node *prev;
 	Node *parent;
 
-	string direction;
-	bool isDiagonal; 
-
 	int number; // optional row, col
 	float f; 	// g + h
 	float g;	// g(n) = parent->g + hCost or parent->g +dCost

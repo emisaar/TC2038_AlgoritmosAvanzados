@@ -21,7 +21,6 @@ Node::Node(int _number){
     number = _number;
     // distance = 10000;
     parent = nullptr;
-    isDiagonal = false;
     // g = parent->g + h;
     // f = g + h;
 }
