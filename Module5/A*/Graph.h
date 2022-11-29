@@ -7,7 +7,6 @@
 
 #pragma once
 #include "Node.h"
-#include "Edge.h"
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -18,7 +17,6 @@ using namespace std;
 class Graph {
     public:
         vector<Node*> nodes;
-        vector<Edge*> edges;
 
         vector<vector<int> > matrix;
 

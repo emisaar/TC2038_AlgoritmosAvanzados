@@ -34,7 +34,7 @@ vector<vector<int> > createMatrix(int n) {
 }
 
 int main() {
-    cout << "Introduce matriz: ";
+    cout << "INPUT: ";
     int n;
     cin >> n;
     vector<vector<int> > matrix = createMatrix(n);
@@ -52,11 +52,20 @@ int main() {
     Graph *g = new Graph(nodes, matrix);
     vector<Node*> AStar = g->runAStar(nodes[0], nodes[nodes.size() - 1]);
     cout << endl;
-    cout << "\tPath coords:";
-    for (int i = 0; i < AStar.size(); i++) {
-        cout << "(" << AStar[i]->x << ", " << AStar[i]->y << ") ";
+    if (AStar.size() == 0) {
+        cout << "\tNo hay camino" << endl << endl;
+    } else {
+        cout << "\tCamino: ";
+        for (int i = 0; i < AStar.size(); i++) {
+            cout << "(" << AStar[i]->x << ", " << AStar[i]->y << ") ";
+        }
+        cout << endl << endl;
     }
-    cout << endl;
+    // cout << "\tPath coords:";
+    // for (int i = 0; i < AStar.size(); i++) {
+    //     cout << "(" << AStar[i]->x << ", " << AStar[i]->y << ") ";
+    // }
+    // cout << endl;
 }
 
 /*
@@ -73,6 +82,13 @@ int main() {
 1, 0, 0, 0
 1, 1, 0, 1
 1, 1, 0, 0
+0, 1, 1, 1
+
+
+4
+1, 0, 0, 0
+1, 1, 0, 1
+0, 0, 0, 0
 0, 1, 1, 1
 */
 

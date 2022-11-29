@@ -9,14 +9,14 @@
 #include "math.h"
 
 // Constructor
-// Complejidad: O(n^2)
+// Complejidad: O(1)
 Graph::Graph(vector<Node*> _nodes, vector<vector<int> > _matrix){
     nodes = _nodes;
     matrix = _matrix;
 }
 
 // RunAStar Method
-// Complejidad: O(n^2)
+// Complejidad: O(n * (n+ m + p))
 vector<Node*> Graph::runAStar(Node *source, Node *goal) {
     vector<Node*> openList; // Holds potential best path nodes that have not yet been visited, starting with the source node
     vector<Node*> closedList; // Starts empty, holds nodes that have already been visited
@@ -31,7 +31,8 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
     Nodes create a reference to their parent node
     */
    int i = 0;
-    while (!openList.empty()) {
+   // Complejidad: O(n)
+    while (!openList.empty()) { 
         Node *current = getMinF(openList); // Get node with lowest f value
         // cout << "Previous: " << endl;
         // cout << current->parent << endl;
@@ -40,12 +41,15 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
             // cout << current->parent << endl;
             return constructPath(current);
         }
+        // Complejidad: O(n)
         remove(openList, current); // Remove current from openList
         closedList.push_back(current); // Add current to closedList
+        // Complejidad: O(m)
         getNodeNeighbors(current); // Get neighbors of current
         vector<Node*> currNeighbors = current->neighbors; // Get neighbors of current
 
         vector<Node*>::iterator ni;
+        // Complejidad: O(p)
         for(ni = currNeighbors.begin(); ni != currNeighbors.end(); ++ni) { // For each neighbor of current    
             Node *neighbor = *ni;
             if (find(closedList.begin(), closedList.end(), neighbor) == closedList.end()) { // if neighbor is not in closedList
@@ -70,7 +74,6 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
 // Heuristic
 // Complejidad: O(1)
 float Graph::heuristic(Node *a, Node *b) {
-    // cout << "Heuristic: " << sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2)) << endl;
     return sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2));
 }
 
@@ -79,7 +82,6 @@ float Graph::heuristic(Node *a, Node *b) {
 Node* Graph::findNode(int x, int y) {
     for (int i = 0; i < nodes.size(); i++) {
         if (nodes[i]->x == x && nodes[i]->y == y) {
-            // cout << "Node found: " << nodes[i]->number << ": (" <<  nodes[i]->x << ", " << nodes[i]->y << ")" << endl;
             return nodes[i];
         }
     }
@@ -201,7 +203,7 @@ void Graph::getNodeNeighbors(Node *n) {
 }
 
 // Construct Path
-// Complejidad: O(n)
+// Complejidad: O(n + m)
 void Graph::constructStringPath(vector<Node*> &path) {
     vector<string> stringPath;
     Node *currPos, *nextPos;
