@@ -6,7 +6,7 @@
 //  Fecha: 28/11/2022
 
 #pragma once
-#include "Node.h"
+#include "Node.hpp"
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -23,14 +23,12 @@ class Graph {
         Node *s;
         Node *goal;
 
-        Graph(vector<Node*> _nodes, vector<vector<int> > _matrix); 
+        Graph(vector<Node*> _nodes, vector<vector<int> > _matrix);
         
         vector<Node*> runAStar(Node *source, Node *goal);
         float heuristic(Node *u, Node *v);
         Node *getMinF(vector<Node*> qs);
         vector<Node*> constructPath(Node *goal);
-
-        void constructStringPath(vector<Node*> &path);
 
         void remove(vector<Node*> &qs, Node *q);
 

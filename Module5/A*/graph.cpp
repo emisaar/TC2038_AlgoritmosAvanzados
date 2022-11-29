@@ -5,7 +5,7 @@
 //
 //  Fecha: 28/11/2022
 
-#include "Graph.h"
+#include "Graph.hpp"
 #include "math.h"
 
 // Constructor
@@ -32,7 +32,7 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
     */
    int i = 0;
    // Complejidad: O(n)
-    while (!openList.empty()) { 
+    while (!openList.empty()) {
         Node *current = getMinF(openList); // Get node with lowest f value
         // cout << "Previous: " << endl;
         // cout << current->parent << endl;
@@ -50,17 +50,17 @@ vector<Node*> Graph::runAStar(Node *source, Node *goal) {
 
         vector<Node*>::iterator ni;
         // Complejidad: O(p)
-        for(ni = currNeighbors.begin(); ni != currNeighbors.end(); ++ni) { // For each neighbor of current    
+        for(ni = currNeighbors.begin(); ni != currNeighbors.end(); ++ni) { // For each neighbor of current
             Node *neighbor = *ni;
             if (find(closedList.begin(), closedList.end(), neighbor) == closedList.end()) { // if neighbor is not in closedList
-                neighbor->f = neighbor->g + heuristic(neighbor, goal); 
+                neighbor->f = neighbor->g + heuristic(neighbor, goal);
                 if (find(openList.begin(), openList.end(), neighbor) == openList.end()) { // if neighbor is not in openList
                     neighbor->parent = current; // Set current as neighbor's parent
                     openList.push_back(neighbor); // Add neighbor to openList
                 } else {
                     Node* openNeighbor = *find(openList.begin(), openList.end(), neighbor); // Get neighbor from openList
                     if (neighbor->g < openNeighbor->g) {
-                        openNeighbor->parent = current; // Set neighbor's parent to current    
+                        openNeighbor->parent = current; // Set neighbor's parent to current
                         openNeighbor->g = neighbor->g;
                     }
                 }
@@ -100,7 +100,7 @@ bool Graph::isSafe(int x, int y, int rows, int columns) { // checking the boundr
 void Graph::getNodeNeighbors(Node *n) {
     int rows = matrix.size();
     int columns = matrix[0].size();
-    float dCost;                   
+    float dCost;
     int count = 0;
     if (matrix[n->x][n->y] == 1) { // if the current node is not a wall
         if(isSafe(n->x - 1, n->y, rows, columns)) { // up
@@ -162,7 +162,7 @@ void Graph::getNodeNeighbors(Node *n) {
 
                 n->neighbors.push_back(node);
             }
-        } 
+        }
 
         if(isSafe(n->x + 1, n->y + 1, rows, columns)) { // right-down
             if(matrix[n->x + 1][n->y + 1] == 1) {
@@ -202,51 +202,6 @@ void Graph::getNodeNeighbors(Node *n) {
     }
 }
 
-// Construct Path
-// Complejidad: O(n + m)
-void Graph::constructStringPath(vector<Node*> &path) {
-    vector<string> stringPath;
-    Node *currPos, *nextPos;
-    currPos->x = path[path.size() - 1]->x;
-    currPos->y = path[path.size() - 1]->y;
-    path.pop_back();
-   
-    while(!path.empty()) {
-        nextPos->x = path[path.size() - 1]->x;
-        nextPos->y = path[path.size() - 1]->y;
-        path.pop_back();
-
-        if(currPos->x == nextPos->x && currPos->y == nextPos->y + 1) {
-            stringPath.push_back("L");
-        } else if(currPos->x == nextPos->x && currPos->y == nextPos->y - 1) {
-            stringPath.push_back("R");
-        } else if(currPos->x == nextPos->x + 1 && currPos->y == nextPos->y) {
-            stringPath.push_back("U");
-        } else if(currPos->x == nextPos->x - 1 && currPos->y == nextPos->y) {
-            stringPath.push_back("D");
-        } else if(currPos->x == nextPos->x + 1 && currPos->y == nextPos->y + 1) {
-            stringPath.push_back("UL");
-        } else if(currPos->x == nextPos->x + 1 && currPos->y == nextPos->y - 1) {
-            stringPath.push_back("UR");
-        } else if(currPos->x == nextPos->x - 1 && currPos->y == nextPos->y + 1) {
-            stringPath.push_back("DL");
-        } else if(currPos->x == nextPos->x - 1 && currPos->y == nextPos->y - 1) {
-            stringPath.push_back("DR");
-        }
-
-        currPos->x = nextPos->x;
-        currPos->y = nextPos->y;
-    }
-    
-    cout << "\tString Path: ";
-    for (int i = 0; i < stringPath.size(); i++) {
-        if (i == stringPath.size() - 1) {
-            cout << stringPath[i];
-        } else {
-            cout << stringPath[i] << ", ";
-        }
-    }
-}
 
 // Construct Path
 // Complejidad: O(n)
@@ -260,7 +215,7 @@ vector<Node*> Graph::constructPath(Node *node) {
         pathCopy.push_back(node);
     }
 
-    constructStringPath(path);
+    //constructStringPath(path);
 
     reverse(pathCopy.begin(), pathCopy.end());
 
